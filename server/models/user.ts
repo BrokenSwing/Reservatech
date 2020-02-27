@@ -1,4 +1,4 @@
-import {Table, Column, DataType, Model, BelongsToMany} from 'sequelize-typescript';
+import {Table, Column, DataType, Model, BelongsToMany, Unique} from 'sequelize-typescript';
 import {Organization} from './organization';
 import {OrganizationMember} from './organization-member';
 import {EventParticipation} from './event-participation';
@@ -16,6 +16,7 @@ export class User extends Model<User> {
     lastName: string;
 
     @Column(DataType.STRING)
+    @Unique
     email: string;
 
     @BelongsToMany(() => Organization, () => OrganizationMember)
