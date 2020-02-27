@@ -19,6 +19,9 @@ export class User extends Model<User> {
     @Column(DataType.STRING)
     email: string;
 
+    @Column(DataType.STRING)
+    password: string;
+
     @BelongsToMany(() => Organization, () => OrganizationMember)
     organizations: Organization[];
 
