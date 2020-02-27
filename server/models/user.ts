@@ -15,8 +15,8 @@ export class User extends Model<User> {
     @Column(DataType.STRING)
     lastName: string;
 
-    @Column(DataType.STRING)
     @Unique
+    @Column(DataType.STRING)
     email: string;
 
     @BelongsToMany(() => Organization, () => OrganizationMember)
