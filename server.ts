@@ -3,6 +3,7 @@
 import * as express from 'express';
 import {join} from 'path';
 import models from './server/models';
+import {apiRoutes} from './server/routes';
 
 
 models.init().then(() => {
@@ -24,6 +25,7 @@ models.init().then(() => {
   // app.set('view engine', 'html');
   // app.set('views', DIST_FOLDER);
 
+  app.use('/api', apiRoutes());
 
   app.get('*', express.static(DIST_FOLDER, {
     maxAge: '0',
