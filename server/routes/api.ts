@@ -15,6 +15,7 @@ export function apiRoutes(): Router {
   // USERS API //
 
   router.get('/users', usersController.listAll);
+  router.post('/users', usersController.createOne);
 
   // ORGANIZATIONS API //
 
