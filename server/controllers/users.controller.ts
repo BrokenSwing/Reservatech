@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 import * as usersService from '../services/users.service';
+import { User } from '../models/user';
 
 function listAll(req: Request, res: Response) {
   usersService.findAll().then((users) => {
-    res.send(users);
+    res.send(users.map(toPubliclyRendered));
   }).catch(() => {
     res.send(500);
   });
@@ -23,7 +24,7 @@ function createOne(req: Request, res: Response) {
 
     usersService.createUser(b.firstName, b.lastName, b.email, b.password).then((user) => {
 
-      res.status(201).send(user);
+      res.status(201).send(toPubliclyRendered(user));
 
     }).catch((e) => {
       switch (e) {
@@ -47,4 +48,32 @@ function createOne(req: Request, res: Response) {
 
 }
 
-export default { listAll, createOne };
+function findOneById(req: Request, res: Response) {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    res.status(400).send({ error: 'Invalid id' });
+    return;
+  }
+
+  usersService.findById(id).then((user) => {
+    res.send(toPubliclyRendered(user));
+  }).catch((err) => {
+    if (err === usersService.Errors.NOT_FOUND) {
+      res.status(404).send({ error: err.message });
+    } else {
+      res.status(500).send({ error: err.message });
+    }
+  });
+
+}
+
+function toPubliclyRendered(user: User): object {
+  return {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+  };
+}
+
+export default { listAll, createOne, findOneById };
