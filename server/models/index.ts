@@ -24,9 +24,7 @@ async function init(): Promise<Sequelize> {
   }
 
   try {
-    await sequelize.sync({
-      force: true,
-    });
+    await sequelize.sync();
   } catch (e) {
     console.log('Unable to sync database schema.');
     console.error(e);
