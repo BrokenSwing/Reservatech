@@ -68,6 +68,49 @@ function findOneById(req: Request, res: Response) {
 
 }
 
+function patchOne(req: Request, res: Response) {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    res.status(400).send({ error: 'Invalid id' });
+    return;
+  }
+
+  const b = req.body;
+
+  if (b !== undefined && (b.firstName || b.lastName || b.email || b.password)) {
+
+    usersService.updateUser(id, {
+      firstName: b.firstName,
+      lastName: b.lastName,
+      email: b.email,
+      password: b.password,
+    }).then((user) => {
+      res.send(toPubliclyRendered(user));
+    }).catch((e) => {
+      switch (e) {
+        case usersService.Errors.FIRST_NAME_WRONG_FORMAT:
+        case usersService.Errors.LAST_NAME_WRONG_FORMAT:
+        case usersService.Errors.PASSWORD_TOO_SHORT:
+        case usersService.Errors.PASSWORD_HASH:
+        case usersService.Errors.EMAIL_WRONG_FORMAT:
+        case usersService.Errors.ALREADY_EXISTS:
+          res.status(400).send({ error: e.message });
+          break;
+        case usersService.Errors.NOT_FOUND:
+          res.status(404).send({ error: e.message });
+          break;
+        case usersService.Errors.INTERNAL:
+          res.status(500).send({ error: e.message });
+      }
+    });
+
+  } else {
+    res.status(400).send({ error: 'You must specify one of: firstName, lastName, email, password'});
+  }
+
+}
+
 function toPubliclyRendered(user: User): object {
   return {
     id: user.id,
@@ -76,4 +119,4 @@ function toPubliclyRendered(user: User): object {
   };
 }
 
-export default { listAll, createOne, findOneById };
+export default { listAll, createOne, findOneById, patchOne };

@@ -17,6 +17,7 @@ export function apiRoutes(): Router {
   router.get('/users', usersController.listAll);
   router.post('/users', usersController.createOne);
   router.get('/users/:id', usersController.findOneById);
+  router.patch('/users/:id', usersController.patchOne);
 
   // ORGANIZATIONS API //
 

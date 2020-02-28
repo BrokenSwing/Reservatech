@@ -149,3 +149,77 @@ export async function createUser(firstName: string, lastName: string, email: str
   }
 
 }
+
+/**
+ * Updates the user with the given value replacing it's properties with the given values.
+ * This function rejects with Errors.FIRST_NAME_WRONG_FORMAT if the firstName given in newValues is invalid.
+ * This function rejects with Errors.LAST_NAME_WRONG_FORMAT if the lastName given in newValues is invalid.
+ * This function rejects with Errors.PASSWORD_TOO_SHORT if the password given in newValues is too short.
+ * This function rejects with Errors.PASSWORD_HASH if the password given in newValues fails to be hashed.
+ * This function rejects with Errors.NOT_FOUND if no user with the given id was found.
+ * This function rejects with Errors.EMAIL_WRONG_FORMAT if the email given in newValues is not a valid email format.
+ * This function rejects with Errors.ALREADY_EXISTS if the email given in newValues if already used by an other user.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * If an attribute isn't provided in newValues, it's validity won't be checked and no update on the user will be
+ * processed for this property on user.
+ * It allows to update only some of properties and keeping others to their current value.
+ *
+ * @param id the user id
+ * @param newValues the new values for the user
+ *
+ * @return the updated user, or an error
+ */
+export async function updateUser(
+  id: number, newValues: { firstName?: string, lastName?: string, email?: string, password?: string}
+  ): Promise<User> {
+
+  if (newValues.firstName && !FIRST_NAME_FORMAT.test(newValues.firstName)) {
+    return Promise.reject(Errors.FIRST_NAME_WRONG_FORMAT);
+  }
+
+  if (newValues.lastName && !LAST_NAME_FORMAT.test(newValues.lastName)) {
+    return Promise.reject(Errors.LAST_NAME_WRONG_FORMAT);
+  }
+
+  if (newValues.password && newValues.password.length < PASSWORD_MIN_LENGTH) {
+    return Promise.reject(Errors.PASSWORD_TOO_SHORT);
+  }
+
+  if (newValues.password) {
+    try {
+      newValues.password = await PASSWORD_HASH_STRATEGY.hash(newValues.password);
+    } catch (e) {
+      return Promise.reject(Errors.PASSWORD_HASH);
+    }
+  }
+
+  try {
+    const user: User = await User.findByPk(id);
+
+    if (user === null) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    await user.update({
+      firstName: newValues.firstName,
+      lastName: newValues.lastName,
+      email: newValues.email,
+      password: newValues.password,
+    });
+
+    return Promise.resolve(user);
+
+  } catch (e) {
+    if (e.name !== null && e.name === 'SequelizeValidationError') {
+      return Promise.reject(Errors.EMAIL_WRONG_FORMAT);
+    } else if (e.name !== undefined && e.name === 'SequelizeUniqueConstraintError') {
+      return Promise.reject(Errors.ALREADY_EXISTS);
+    } else {
+      console.error('Error while updating an user');
+      console.error(e);
+      return Promise.reject(Errors.INTERNAL);
+    }
+  }
+
+}
