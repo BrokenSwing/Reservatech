@@ -223,3 +223,33 @@ export async function updateUser(
   }
 
 }
+
+/**
+ * Deletes the user with the given id.
+ * THis function rejects with Errors.NOT_FOUND if no user with the given id was found.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * @param id the user id
+ *
+ */
+export async function deleteUser(id: number): Promise<void> {
+
+  try {
+    const destroyedCount = await User.destroy({
+      where: {
+        id,
+      }
+    });
+
+    if (destroyedCount === 0) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    return Promise.resolve();
+  } catch (e) {
+    console.error(`Error while deleting user : ${id}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
+
+}
