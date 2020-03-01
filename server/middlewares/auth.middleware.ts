@@ -46,3 +46,18 @@ export const authenticated = (force: boolean = true) => (req: Request, res: Resp
 export function isRequestAuthenticated(req: Request): req is AuthenticatedRequest {
   return (req as AuthenticatedRequest).userInfo !== undefined;
 }
+
+export const resourceOwned = () => (req: Request, res: Response, next: NextFunction) => {
+    if (isRequestAuthenticated(req)) {
+      const id = parseInt(req.params.id, 10);
+
+      if (req.userInfo.userId === id) {
+        next();
+      } else {
+        res.status(403).send({ error: 'Forbidden' });
+      }
+
+    } else {
+      res.status(401).send({ error: 'Unauthorized' });
+    }
+};

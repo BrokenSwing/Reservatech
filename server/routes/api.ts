@@ -5,7 +5,7 @@ import organizationsController from '../controllers/organizations.controller';
 import usersController from '../controllers/users.controller';
 import authController from '../controllers/auth.controller';
 
-import { authenticated } from '../middlewares/auth.middleware';
+import { authenticated, resourceOwned } from '../middlewares/auth.middleware';
 
 export function apiRoutes(): Router {
 
@@ -25,8 +25,8 @@ export function apiRoutes(): Router {
   router.post('/users', usersController.createOne);
 
   router.get('/users/:id', authenticated(false), usersController.findOneById);
-  router.patch('/users/:id', usersController.patchOne);
-  router.delete('/users/:id', usersController.deleteOne);
+  router.patch('/users/:id', authenticated(), resourceOwned(), usersController.patchOne);
+  router.delete('/users/:id', authenticated(), resourceOwned(), usersController.deleteOne);
 
   // ORGANIZATIONS API //
 
