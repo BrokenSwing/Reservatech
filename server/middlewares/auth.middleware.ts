@@ -19,7 +19,7 @@ export const authenticated = (force: boolean = true) => (req: Request, res: Resp
   const authorizationHeader = req.header('Authorization');
   if (authorizationHeader && authorizationHeader.startsWith('Bearer ')) {
 
-    const token = authorizationHeader.substring(authorizationHeader.length - BEARER_LENGTH);
+    const token = authorizationHeader.substring(BEARER_LENGTH);
     tokensService.verifyToken(token).then((info) => {
 
       (req as AuthenticatedRequest).userInfo = info;
