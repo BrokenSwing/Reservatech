@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import { User } from '../models/user';
 
-const Errors = {
+export const Errors = {
   TOKEN_SIGNING: new Error('Unable to sign token'),
   INVALID_TOKEN: new Error('Invalid token'),
   EXPIRED_TOKEN: new Error('Expired token'),
