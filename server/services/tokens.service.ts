@@ -20,10 +20,10 @@ if (TOKEN_SECRET === 'default_jwt_secret') {
  *
  * @param user the user to create a token for
  *
- * @return the signed token, or an error is signing failed
+ * @return the signed token and it's claims, or an error is signing failed
  */
-export async function createTokenFor(user: User): Promise<string> {
-  return new Promise<string>(((resolve, reject) => {
+export async function createTokenFor(user: User): Promise<{token: string, info: TokenInfo}> {
+  return new Promise(((resolve, reject) => {
 
     const info: TokenInfo = {
       userId: user.id,
@@ -35,7 +35,10 @@ export async function createTokenFor(user: User): Promise<string> {
           console.error(err);
           reject(Errors.TOKEN_SIGNING);
         } else {
-          resolve(token);
+          resolve({
+            token,
+            info,
+          });
         }
     });
   }));
