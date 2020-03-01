@@ -2,7 +2,7 @@ import * as usersService from './users.service';
 import { PASSWORD_HASH_STRATEGY, Errors as HashErrors } from '../security/hash-strategy';
 import {User} from '../models/user';
 
-const Errors = {
+export const Errors = {
   INVALID_PASSWORD: new Error('Invalid password'),
   UNKNOWN_EMAIL: new Error('Unknown email'),
   INTERNAL: new Error('Internal error'),
