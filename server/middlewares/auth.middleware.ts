@@ -7,14 +7,14 @@ export type AuthenticatedRequest = Request & { userInfo: tokensService.TokenInfo
 
 /**
  * Checks if the incoming request has a bearer token, then tries to validate this token.
- * This middleware sends 401 HTTP code if no token or an invalid token were provided.
  * If the provided token is valid, it stores token's info in request object.
  *
- * @param req the request to authenticate
- * @param res the response for the incoming request
- * @param next the function to call to forward request to next request handler
+ * When forced = true:
+ *  This middleware sends 401 HTTP code if no token or an invalid token were provided.
+ *
+ * @param force true if authentication must be forced
  */
-export function authenticated(req: Request, res: Response, next: NextFunction) {
+export const authenticated = (force: boolean = true) => (req: Request, res: Response, next: NextFunction) => {
 
   const authorizationHeader = req.header('Authorization');
   if (authorizationHeader && authorizationHeader.startsWith('Bearer ')) {
@@ -25,13 +25,23 @@ export function authenticated(req: Request, res: Response, next: NextFunction) {
       (req as AuthenticatedRequest).userInfo = info;
       next();
 
-    }).catch((e) => res.status(401).send({ error: e.message }));
+    }).catch((e) => {
+      if (force) {
+        res.status(401).send({ error: e.message });
+      } else {
+        next();
+      }
+    });
 
   } else {
-    res.status(401).send({ error: 'Unauthorized' });
+    if (force) {
+      res.status(401).send({ error: 'Unauthorized' });
+    } else {
+      next();
+    }
   }
 
-}
+};
 
 export function isRequestAuthenticated(req: Request): req is AuthenticatedRequest {
   return (req as AuthenticatedRequest).userInfo !== undefined;
