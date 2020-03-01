@@ -5,6 +5,8 @@ import organizationsController from '../controllers/organizations.controller';
 import usersController from '../controllers/users.controller';
 import authController from '../controllers/auth.controller';
 
+import { authenticated } from '../middlewares/auth.middleware';
+
 export function apiRoutes(): Router {
 
   const router = Router();
@@ -22,7 +24,7 @@ export function apiRoutes(): Router {
   router.get('/users', usersController.listAll);
   router.post('/users', usersController.createOne);
 
-  router.get('/users/:id', usersController.findOneById);
+  router.get('/users/:id', authenticated(false), usersController.findOneById);
   router.patch('/users/:id', usersController.patchOne);
   router.delete('/users/:id', usersController.deleteOne);
 

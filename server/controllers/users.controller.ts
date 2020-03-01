@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import * as usersService from '../services/users.service';
 import { User } from '../models/user';
+import {isRequestAuthenticated} from '../middlewares/auth.middleware';
 
 function listAll(req: Request, res: Response) {
   usersService.findAll().then((users) => {
@@ -57,7 +58,11 @@ function findOneById(req: Request, res: Response) {
   }
 
   usersService.findById(id).then((user) => {
-    res.send(toPubliclyRendered(user));
+    if (isRequestAuthenticated(req) && req.userInfo.userId === id) {
+      res.send(toPrivatelyRendered(user));
+    } else {
+      res.send(toPubliclyRendered(user));
+    }
   }).catch((err) => {
     if (err === usersService.Errors.NOT_FOUND) {
       res.status(404).send({ error: err.message });
@@ -138,6 +143,15 @@ function toPubliclyRendered(user: User): object {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
+  };
+}
+
+function toPrivatelyRendered(user: User): object {
+  return {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
   };
 }
 
