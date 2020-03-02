@@ -104,3 +104,35 @@ export async function createOrganization(name: string, desc: string, owner: numb
   }
 
 }
+
+/**
+ * Deletes the organization with the given id.
+ *
+ * This function rejects with Errors.NOT_FOUND if no organization with the given id exists.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * @param id the id of the organization to delete
+ *
+ * @return nothing if deletion succeeded, else return an error
+ */
+export async function deleteOrganization(id: number): Promise<void> {
+
+  try {
+    const deletedCount = await Organization.destroy({
+      where: {
+        id,
+      }
+    });
+
+    if (deletedCount === 0) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    return Promise.resolve();
+  } catch (e) {
+    console.error(`Unable to delete organization with id: ${id}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
+
+}
