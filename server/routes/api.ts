@@ -34,6 +34,9 @@ export function apiRoutes(): Router {
   // ORGANIZATIONS API //
 
   router.get('/organizations', organizationsController.listAll);
+  router.post('/organizations', authenticated(), organizationsController.createOne);
+
+  router.get('/organizations/:id', organizationsController.findOneById);
 
   return router;
 }
