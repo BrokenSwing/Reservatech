@@ -17,29 +17,44 @@ export function apiRoutes(): Router {
 
   // EVENTS API //
 
-  router.get('/events', eventsController.listAll);
-  router.post('/events', eventsController.createOne);
+  const eventsRouter = Router();
+  eventsRouter.get('/', eventsController.listAll);
+  eventsRouter.post('/', eventsController.createOne);
 
-  router.get('/events/:id', eventsController.findOnyById);
+  eventsRouter.get('/:id', eventsController.findOnyById);
 
   // USERS API //
 
-  router.get('/users', usersController.listAll);
-  router.post('/users', usersController.createOne);
+  const usersRouter = Router();
 
-  router.get('/users/:id', authenticated(false), usersController.findOneById);
-  router.patch('/users/:id', authenticated(), resourceOwned(), usersController.patchOne);
-  router.delete('/users/:id', authenticated(), resourceOwned(), usersController.deleteOne);
+  usersRouter.route('/')
+    .get(usersController.listAll)
+    .post(usersController.createOne);
+
+  usersRouter.route('/:id')
+    .get(authenticated(false), usersController.findOneById)
+    .patch(authenticated(), resourceOwned(), usersController.patchOne)
+    .delete(authenticated(), resourceOwned(), usersController.deleteOne);
 
   // ORGANIZATIONS API //
 
-  router.get('/organizations', organizationsController.listAll);
-  router.post('/organizations', authenticated(), organizationsController.createOne);
+  const organizationsRouter = Router();
 
-  router.get('/organizations/:id', organizationsController.findOneById);
-  router.delete('/organizations/:id', authenticated(), isOrganizationMember(), organizationsController.deleteOne);
+  organizationsRouter.route('/')
+    .get(organizationsController.listAll)
+    .post(authenticated(), organizationsController.createOne);
 
-  router.get('/organizations/:id/members', organizationsController.listMembers);
+  organizationsRouter.route('/:id')
+    .get(organizationsController.findOneById)
+    .delete(authenticated(), isOrganizationMember(), organizationsController.deleteOne);
+
+  organizationsRouter.get('/:id/members', organizationsController.listMembers);
+
+  // ROUTERS MOUNTING //
+
+  router.use('/events', eventsRouter);
+  router.use('/users', usersRouter);
+  router.use('/organizations', organizationsRouter);
 
   return router;
 }
