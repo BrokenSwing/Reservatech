@@ -18,6 +18,9 @@ export function apiRoutes(): Router {
   // EVENTS API //
 
   router.get('/events', eventsController.listAll);
+  router.post('/events', eventsController.createOne);
+
+  router.get('/events/:id', eventsController.findOnyById);
 
   // USERS API //
 
