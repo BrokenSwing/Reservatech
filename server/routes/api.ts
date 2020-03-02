@@ -5,7 +5,7 @@ import organizationsController from '../controllers/organizations.controller';
 import usersController from '../controllers/users.controller';
 import authController from '../controllers/auth.controller';
 
-import { authenticated, resourceOwned } from '../middlewares/auth.middleware';
+import { authenticated, resourceOwned, isOrganizationMember } from '../middlewares/auth.middleware';
 
 export function apiRoutes(): Router {
 
@@ -37,7 +37,7 @@ export function apiRoutes(): Router {
   router.post('/organizations', authenticated(), organizationsController.createOne);
 
   router.get('/organizations/:id', organizationsController.findOneById);
-  router.delete('/organizations/:id', organizationsController.deleteOne);
+  router.delete('/organizations/:id', authenticated(), isOrganizationMember(), organizationsController.deleteOne);
 
   router.get('/organizations/:id/members', organizationsController.listMembers);
 
