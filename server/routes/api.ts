@@ -39,5 +39,7 @@ export function apiRoutes(): Router {
   router.get('/organizations/:id', organizationsController.findOneById);
   router.delete('/organizations/:id', organizationsController.deleteOne);
 
+  router.get('/organizations/:id/members', organizationsController.listMembers);
+
   return router;
 }

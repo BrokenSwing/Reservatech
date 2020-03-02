@@ -136,3 +136,36 @@ export async function deleteOrganization(id: number): Promise<void> {
   }
 
 }
+
+/**
+ * Finds all members for the organization with the given id.
+ *
+ * This function rejects with Errors.NOT_FOUND if no organization with the given id exists.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * @param id the id of the organization to find members for
+ *
+ * @return an array of integers containing the ids of users being members of the organization with given id
+ */
+export async function findOrganizationMembers(id: number): Promise<number[]> {
+
+  try {
+    const members: OrganizationMember[] = await OrganizationMember.findAll({
+      where: {
+        organizationId: id,
+      }
+    });
+
+    if (members.length === 0) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    return members.map((member) => member.userId);
+
+  } catch (e) {
+    console.error(`Unable to fetch members for organization with id: ${id}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
+
+}
