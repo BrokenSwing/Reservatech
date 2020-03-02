@@ -25,6 +25,7 @@ models.init().then(() => {
   // app.set('view engine', 'html');
   // app.set('views', DIST_FOLDER);
 
+  app.use(express.json());
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use('/api', apiRoutes());
 

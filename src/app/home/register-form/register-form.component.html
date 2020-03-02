@@ -1,0 +1,110 @@
+<h5>Inscription</h5>
+
+<div class="alert alert-danger" *ngIf="this.errorMessage">
+  {{this.errorMessage}}
+</div>
+
+<div class="alert alert-success" *ngIf="this.successMessage">
+  {{this.successMessage}}
+</div>
+
+
+<form #registerForm="ngForm">
+  <div class="form-group">
+    <label for="firstNameFieldForRegister">Prénom</label>
+    <input
+      id="firstNameFieldForRegister"
+      type="text" class="form-control"
+      required
+      [(ngModel)]="model.firstName"
+      name="firstName"
+      minlength="2"
+      #firstName="ngModel"
+    >
+    <small class="form-text text-danger" *ngIf="firstName.invalid && (firstName.dirty || firstName.touched) && firstName.errors.required">
+      Requis.
+    </small>
+    <small class="form-text text-danger" *ngIf="firstName.invalid && (firstName.dirty || firstName.touched) && firstName.errors.minlength">
+      Veillez rentrer un prénom avec au moins 2 caractères.
+    </small>
+  </div>
+  <div class="form-group">
+    <label for="lastNameFieldForRegister">Nom de famille</label>
+    <input
+      id="lastNameFieldForRegister"
+      type="text" class="form-control"
+      required
+      [(ngModel)]="model.lastName"
+      name="lastName"
+      minlength="2"
+      #lastName="ngModel"
+    >
+    <small class="form-text text-danger" *ngIf="lastName.invalid && (lastName.dirty || lastName.touched) && lastName.errors.required">
+      Requis.
+    </small>
+    <small class="form-text text-danger" *ngIf="lastName.invalid && (lastName.dirty || lastName.touched) && lastName.errors.minlength">
+      Veillez rentrer un nom avec au moins 2 caractères.
+    </small>
+  </div>
+  <div class="form-group">
+    <label for="emailFieldForRegister">Email</label>
+    <input
+      id="emailFieldForRegister"
+      type="email"
+      class="form-control"
+      required
+      [(ngModel)]="model.email"
+      name="email"
+      #email="ngModel"
+      email="true"
+    >
+    <small class="form-text text-danger" *ngIf="email.invalid && (email.dirty || email.touched) && email.errors.required">
+      Requis.
+    </small>
+    <small class="form-text text-danger" *ngIf="email.invalid && (email.dirty || email.touched) && email.errors.email">
+      Email invalide.
+    </small>
+  </div>
+  <div class="form-group">
+    <label for="passwordFieldForRegister">Mot de passe</label>
+    <input
+      id="passwordFieldForRegister"
+      type="password"
+      class="form-control"
+      required
+      [(ngModel)]="model.password"
+      name="password"
+      minlength="10"
+      #password="ngModel"
+    >
+    <small class="form-text text-danger" *ngIf="password.invalid && (password.dirty || password.touched) && password.errors.required">
+      Requis.
+    </small>
+    <small class="form-text text-danger" *ngIf="password.invalid && (password.dirty || password.touched) && password.errors.minlength">
+      Veillez rentrer un mot de passe avec au moins 10 caractères.
+    </small>
+  </div>
+  <div class="form-group">
+    <label for="passwordConfirmFieldForRegister">Confirmation du mot de passe</label>
+    <input
+      id="passwordConfirmFieldForRegister"
+      type="password"
+      class="form-control"
+      required
+      [(ngModel)]="model.passwordConfirm"
+      appFieldMatch="password"
+      name="passwordConfirm"
+      minlength="10"
+      #passwordConfirm="ngModel"
+    >
+    <small class="form-text text-danger" *ngIf="passwordConfirm.invalid &&
+    (passwordConfirm.dirty || passwordConfirm.touched) && passwordConfirm.errors.required">
+      Requis.
+    </small>
+    <small class="form-text text-danger" *ngIf="passwordConfirm.invalid &&
+    (passwordConfirm.dirty || passwordConfirm.touched) && passwordConfirm.errors.matchError">
+      Les mots de passe doivent correspondre.
+    </small>
+  </div>
+  <input type="submit" class="btn btn-primary" value="S'inscrire" (click)="submit()" [disabled]="!registerForm.valid">
+</form>

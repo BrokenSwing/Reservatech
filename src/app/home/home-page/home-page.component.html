@@ -1,0 +1,8 @@
+<section class="row">
+  <section class="col-sm">
+    <app-login-form *ngIf="!isConnected()"></app-login-form>
+  </section>
+  <section class="col-sm">
+    <app-register-form *ngIf="!isConnected()"></app-register-form>
+  </section>
+</section>

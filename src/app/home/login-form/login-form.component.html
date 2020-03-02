@@ -1,0 +1,32 @@
+<h5>Connexion</h5>
+
+<div class="alert alert-danger" *ngIf="this.errorMessage">
+  {{this.errorMessage}}
+</div>
+
+<form #loginForm="ngForm">
+  <div class="form-group">
+    <label for="emailFieldForLogin">Email</label>
+    <input
+      id="emailFieldForLogin"
+      type="email"
+      class="form-control"
+      required
+      [(ngModel)]="model.email"
+      name="email"
+    >
+  </div>
+  <div class="form-group">
+    <label for="passwordFieldForLogin">Mot de passe</label>
+    <input
+      id="passwordFieldForLogin"
+      type="password"
+      class="form-control"
+      required
+      minlength="10"
+      [(ngModel)]="model.password"
+      name="password"
+    >
+  </div>
+  <input type="submit" class="btn btn-primary" value="Se connecter" [disabled]="!loginForm.valid || connecting" (click)="submit()">
+</form>
