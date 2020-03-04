@@ -7,6 +7,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { HomeModule } from './home/home.module';
 import { HttpClientModule } from '@angular/common/http';
 import { EventsModule } from './events/events.module';
+import { OrganizationsModule } from './organizations/organizations.module';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { EventsModule } from './events/events.module';
     HttpClientModule,
     HomeModule,
     EventsModule,
+    OrganizationsModule,
     AppRoutingModule,
   ],
   providers: [],
