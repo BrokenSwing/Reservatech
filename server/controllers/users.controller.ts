@@ -91,7 +91,7 @@ function patchOne(req: Request, res: Response) {
       email: b.email,
       password: b.password,
     }).then((user) => {
-      res.send(toPubliclyRendered(user));
+      res.send(toPrivatelyRendered(user));
     }).catch((e) => {
       switch (e) {
         case usersService.Errors.FIRST_NAME_WRONG_FORMAT:

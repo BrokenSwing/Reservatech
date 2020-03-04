@@ -21,6 +21,14 @@ export class AuthService {
     }, { responseType: 'json' });
   }
 
+  getUserInfo() {
+    return this.info;
+  }
+
+  get authorizationHeader() {
+    return `Bearer ${this.token}`;
+  }
+
   connect(email: string, password: string) {
     return this.http.post<AuthResponse>('/api/auth', {
       email,

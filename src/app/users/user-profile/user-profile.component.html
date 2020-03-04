@@ -1,0 +1,69 @@
+<h2>Profil</h2>
+
+<div class="alert alert-danger" *ngIf="this.errorMessage">
+  {{this.errorMessage}}
+</div>
+
+<div class="alert alert-success" *ngIf="this.successMessage">
+  {{this.successMessage}}
+</div>
+
+<form #profileForm="ngForm" (ngSubmit)="updateProfile(profileForm)">
+  <div class="form-group">
+    <label for="firstNameFieldForProfile">Prénom</label>
+    <input
+      id="firstNameFieldForProfile"
+      type="text" class="form-control"
+      required
+      [(ngModel)]="model.firstName"
+      name="firstName"
+      minlength="2"
+      #firstName="ngModel"
+    >
+    <small class="form-text text-danger" *ngIf="firstName.invalid && (firstName.dirty || firstName.touched) && firstName.errors.required">
+      Requis.
+    </small>
+    <small class="form-text text-danger" *ngIf="firstName.invalid && (firstName.dirty || firstName.touched) && firstName.errors.minlength">
+      Veillez rentrer un prénom avec au moins 2 caractères.
+    </small>
+  </div>
+  <div class="form-group">
+    <label for="lastNameFieldForProfile">Nom de famille</label>
+    <input
+      id="lastNameFieldForProfile"
+      type="text" class="form-control"
+      required
+      [(ngModel)]="model.lastName"
+      name="lastName"
+      minlength="2"
+      #lastName="ngModel"
+    >
+    <small class="form-text text-danger" *ngIf="lastName.invalid && (lastName.dirty || lastName.touched) && lastName.errors.required">
+      Requis.
+    </small>
+    <small class="form-text text-danger" *ngIf="lastName.invalid && (lastName.dirty || lastName.touched) && lastName.errors.minlength">
+      Veillez rentrer un nom avec au moins 2 caractères.
+    </small>
+  </div>
+  <div class="form-group">
+    <label for="emailFieldForProfile">Email</label>
+    <input
+      id="emailFieldForProfile"
+      type="email"
+      class="form-control"
+      required
+      [(ngModel)]="model.email"
+      name="email"
+      #email="ngModel"
+      email="true"
+    >
+    <small class="form-text text-danger" *ngIf="email.invalid && (email.dirty || email.touched) && email.errors.required">
+      Requis.
+    </small>
+    <small class="form-text text-danger" *ngIf="email.invalid && (email.dirty || email.touched) && email.errors.email">
+      Email invalide.
+    </small>
+  </div>
+  <input type="submit" class="btn btn-primary" value="Mettre à jour"
+         [disabled]="!profileForm.valid || !profileForm.dirty || submitting">
+</form>
