@@ -6,11 +6,11 @@ import {EventsListComponent} from './events-list/events-list.component';
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'events',
     component: EventsListComponent,
   },
   {
-    path: ':id',
+    path: 'events/:id',
     component: EventComponent,
     resolve: {
       event: EventResolverService
