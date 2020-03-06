@@ -17,4 +17,8 @@ export class OrganizationsService {
     return this.http.get<Organization>(`/api/organizations/${id}`);
   }
 
+  getMembersIdsFor(organizationId: number) {
+    return this.http.get<number[]>(`/api/organizations/${organizationId}/members`);
+  }
+
 }

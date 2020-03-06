@@ -3,6 +3,7 @@
   <a class="list-group-item list-group-item-action" [routerLink]="'./' + o.id" *ngFor="let o of this.organizations">
     <div class="d-flex w-100 justify-content-between">
       <h5>{{o.name}}</h5>
+      <small *ngIf="o.members">{{o.members.length}} membre(s)</small>
     </div>
     <p class="mb-1">{{o.description}}</p>
   </a>

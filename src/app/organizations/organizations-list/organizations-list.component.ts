@@ -13,7 +13,14 @@ export class OrganizationsListComponent implements OnInit {
   constructor(private organizationsService: OrganizationsService) { }
 
   ngOnInit() {
-    this.organizationsService.getAllOrganizations().subscribe((organizations) => this.organizations = organizations);
+    this.organizationsService.getAllOrganizations().subscribe((organizations) => {
+      this.organizations = organizations;
+      this.organizations.forEach((organization) => {
+        this.organizationsService.getMembersIdsFor(organization.id).subscribe((membersIds) => {
+          organization.members = membersIds;
+        });
+      });
+    });
   }
 
 }
