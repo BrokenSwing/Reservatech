@@ -9,11 +9,19 @@ async function init(): Promise<Sequelize> {
 
   const models = [User, Organization, Event, OrganizationMember, EventParticipation];
 
-  const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: 'db.sqlite',
-    models,
-  });
+  const sequelize = (() => {
+    if (process.env.NODE_ENV === 'production') {
+      return new Sequelize(process.env.DATABASE_URL, {
+        ssl: true,
+      });
+    } else {
+      return new Sequelize({
+        dialect: 'sqlite',
+        storage: 'db.sqlite',
+        models,
+      });
+    }
+  })();
 
   try {
     await sequelize.authenticate();
