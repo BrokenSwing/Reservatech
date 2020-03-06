@@ -12,6 +12,7 @@ module.exports = {
   externals: {
     './dist/server/main': 'require("./server/main")',
     'sequelize': 'require("sequelize")',
+    'aws-sdk': 'require("aws-sdk")',
   },
   target: 'node',
   resolve: { extensions: ['.ts', '.js'] },
