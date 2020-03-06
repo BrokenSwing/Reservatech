@@ -4,6 +4,7 @@ import {Organization} from './organization';
 import {mergeMap} from 'rxjs/operators';
 import {UsersService} from '../users/users.service';
 import {forkJoin} from 'rxjs';
+import {Event} from '../events/event';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,10 @@ export class OrganizationsService {
     return this.getMembersIdsFor(organizationId).pipe(
       mergeMap((ids) => forkJoin(ids.map((id) => this.usersService.getUser(id))))
     );
+  }
+
+  getEventsFor(organizationId: number) {
+    return this.http.get<Event[]>(`/api/organizations/${organizationId}/events`);
   }
 
 }

@@ -1,6 +1,7 @@
 import { Organization } from '../models/organization';
 import * as usersService from '../services/users.service';
 import { OrganizationMember } from '../models/organization-member';
+import { Event } from '../models/event';
 
 const NAME_FORMAT = /^[a-zA-Z\u00C0-\u017F\- ]{1,30}/;
 
@@ -164,6 +165,39 @@ export async function findOrganizationMembers(id: number): Promise<number[]> {
 
   } catch (e) {
     console.error(`Unable to fetch members for organization with id: ${id}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
+
+}
+
+/**
+ * Finds all events belonging to the organization with the given id.
+ *
+ * This function rejects with Errors.NOT_FOUND if no organization with the given id exists.
+ * This function rejects with Errors.INTERNAL if an occurred while querying data soure.
+ *
+ * @param id the id of the organization to fetch events for
+ *
+ * @return an array of events or an error
+ */
+export async function findOrganizationEvents(id: number): Promise<Event[]> {
+
+  try {
+    const organization = await Organization.findByPk(id);
+    if (organization === null) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    const events = await Event.findAll({
+      where: {
+        organizationId: organization.id,
+      }
+    });
+
+    return Promise.resolve(events);
+  } catch (e) {
+    console.error(`Unable to retrieve events for organization with id ${id}`);
     console.error(e);
     return Promise.reject(Errors.INTERNAL);
   }

@@ -108,4 +108,24 @@ function listMembers(req: Request, res: Response) {
 
 }
 
-export default { listAll, findOneById, createOne, deleteOne, listMembers };
+function listEvents(req: Request, res: Response) {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    res.status(400).send({ error: 'Organization id must be an integer' });
+    return;
+  }
+
+  organizationsService.findOrganizationEvents(id).then((events) => {
+    res.send(events);
+  }).catch((e) => {
+    if (e === organizationsService.Errors.NOT_FOUND) {
+      res.status(404).send({ error: e.message });
+    } else {
+      res.status(500).send({ error: e.message });
+    }
+  });
+
+}
+
+export default { listAll, findOneById, createOne, deleteOne, listMembers, listEvents };

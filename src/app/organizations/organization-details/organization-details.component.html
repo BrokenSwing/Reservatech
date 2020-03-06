@@ -1,9 +1,22 @@
 <h2>{{organization.name}}</h2>
 
-<small>Description :</small>
+<hr>
+
+<h4>Description :</h4>
 <p>{{organization.description}}</p>
 
 <section>
-  <small>Membres</small>
+  <h4>Membres</h4>
   <p *ngFor="let m of members">{{m.firstName}} {{m.lastName}}</p>
+</section>
+
+<section class="list-group list-group-flush">
+  <h4>Événements</h4>
+  <a class="list-group-item list-group-item-action" [routerLink]="'/events/' + e.id" *ngFor="let e of this.events">
+    <div class="d-flex w-100 justify-content-between">
+      <h5>{{e.name}}</h5>
+      <small>{{e.beginningDisplay}}</small>
+    </div>
+    <p class="mb-1">{{e.description}}</p>
+  </a>
 </section>
