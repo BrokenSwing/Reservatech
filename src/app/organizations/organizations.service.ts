@@ -5,13 +5,14 @@ import {mergeMap} from 'rxjs/operators';
 import {UsersService} from '../users/users.service';
 import {forkJoin} from 'rxjs';
 import {Event} from '../events/event';
+import {AuthService} from '../auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrganizationsService {
 
-  constructor(private http: HttpClient, private usersService: UsersService) { }
+  constructor(private http: HttpClient, private usersService: UsersService, private authService: AuthService) { }
 
   getAllOrganizations() {
     return this.http.get<Organization[]>('/api/organizations');
@@ -33,6 +34,13 @@ export class OrganizationsService {
 
   getEventsFor(organizationId: number) {
     return this.http.get<Event[]>(`/api/organizations/${organizationId}/events`);
+  }
+
+  createOne(name: string, description: string) {
+    return this.http.post<Organization>('/api/organizations', {
+      name,
+      description,
+    }, { headers: { Authorization: this.authService.authorizationHeader }});
   }
 
 }

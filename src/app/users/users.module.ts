@@ -6,10 +6,11 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import {HttpClientModule} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
 import { UserOrganizationsListComponent } from './user-organizations-list/user-organizations-list.component';
+import { OrganizationCreateComponent } from './organization-create/organization-create.component';
 
 
 @NgModule({
-  declarations: [UserProfileComponent, UserOrganizationsListComponent],
+  declarations: [UserProfileComponent, UserOrganizationsListComponent, OrganizationCreateComponent],
   imports: [
     CommonModule,
     HttpClientModule,

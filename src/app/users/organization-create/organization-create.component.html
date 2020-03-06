@@ -1,0 +1,37 @@
+<h2>Créer une nouvelle organisation</h2>
+<form #organizationForm="ngForm">
+  <div class="form-group">
+    <label for="nameFieldForOrganization">Nom</label>
+    <input
+      id="nameFieldForOrganization"
+      type="text"
+      class="form-control"
+      required
+      [(ngModel)]="model.name"
+      name="name"
+      #name="ngModel"
+    >
+    <small class="form-text text-danger" *ngIf="name.invalid && (name.dirty || name.touched) && name.errors.required">
+      Requis.
+    </small>
+  </div>
+  <div class="form-group">
+    <label for="descriptionFieldForOrganization">Description</label>
+    <textarea
+      id="descriptionFieldForOrganization"
+      class="form-control"
+      required
+      minlength="20"
+      [(ngModel)]="model.description"
+      name="description"
+      #desc="ngModel"
+    ></textarea>
+    <small class="form-text text-danger" *ngIf="desc.invalid && (desc.dirty || desc.touched) && desc.errors.required">
+      Requis.
+    </small>
+    <small class="form-text text-danger" *ngIf="desc.invalid && (desc.dirty || desc.touched) && desc.errors.minlength">
+      La description doit faire au moins 20 caractères de long.
+    </small>
+  </div>
+  <input type="submit" class="btn btn-primary" value="Créer" [disabled]="!organizationForm.valid || submitting" (click)="create()">
+</form>
