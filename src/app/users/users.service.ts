@@ -26,4 +26,8 @@ export class UsersService {
     });
   }
 
+  getUser(id: number) {
+    return this.http.get<User>(`/api/users/${id}`);
+  }
+
 }

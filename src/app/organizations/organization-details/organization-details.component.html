@@ -2,3 +2,8 @@
 
 <small>Description :</small>
 <p>{{organization.description}}</p>
+
+<section>
+  <small>Membres</small>
+  <p *ngFor="let m of members">{{m.firstName}} {{m.lastName}}</p>
+</section>
