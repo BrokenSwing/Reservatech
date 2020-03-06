@@ -1,5 +1,7 @@
 import { User } from '../models/user';
 import { PASSWORD_HASH_STRATEGY, Errors as HashErrors } from '../security/hash-strategy';
+import {Organization} from '../models/organization';
+import {OrganizationMember} from '../models/organization-member';
 
 const PASSWORD_MIN_LENGTH = 10;
 const FIRST_NAME_FORMAT = /^[a-zA-Z\u00C0-\u017F\-]{2,20}/;
@@ -248,6 +250,36 @@ export async function deleteUser(id: number): Promise<void> {
     return Promise.resolve();
   } catch (e) {
     console.error(`Error while deleting user : ${id}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
+
+}
+
+/**
+ * Fetches all organizations the user with the given id is member of.
+ *
+ * This function rejects with Errors.NOT_FOUND if no user with the given id exists.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * @param id the id of user to find the organizations for
+ *
+ * @return an array of organizations or an error
+ */
+export async function fetchUserOrganizations(id: number): Promise<Organization[]> {
+
+  try {
+    const user = await User.findByPk(id, {
+      include: [Organization]
+    });
+
+    if (user === null) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    return Promise.resolve(user.organizations);
+  } catch (e) {
+    console.error(`Error while fetching organizations for user ${id}`);
     console.error(e);
     return Promise.reject(Errors.INTERNAL);
   }

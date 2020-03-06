@@ -36,6 +36,8 @@ export function apiRoutes(): Router {
     .patch(authenticated(), resourceOwned(), usersController.patchOne)
     .delete(authenticated(), resourceOwned(), usersController.deleteOne);
 
+  usersRouter.get('/:id/organizations', usersController.listOrganizations);
+
   // ORGANIZATIONS API //
 
   const organizationsRouter = Router();

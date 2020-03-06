@@ -1,0 +1,11 @@
+<h2>Mes organisations</h2>
+<small><a routerLink="./new">Créer une organisation</a></small>
+
+<section class="list-group list-group-flush">
+  <a class="list-group-item list-group-item-action" [routerLink]="'/organizations/' + o.id" *ngFor="let o of this.organizations">
+    <div class="d-flex w-100 justify-content-between">
+      <h5>{{o.name}}</h5>
+    </div>
+    <p class="mb-1">{{o.description}}</p>
+  </a>
+</section>

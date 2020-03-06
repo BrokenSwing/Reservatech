@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {AuthService} from '../auth.service';
 import {HttpClient} from '@angular/common/http';
 import {User} from './user';
+import {Organization} from '../organizations/organization';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,10 @@ export class UsersService {
 
   getUser(id: number) {
     return this.http.get<User>(`/api/users/${id}`);
+  }
+
+  getUserOrganizations(id: number) {
+    return this.http.get<Organization[]>(`/api/users/${id}/organizations`);
   }
 
 }

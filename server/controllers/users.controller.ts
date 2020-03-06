@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import * as usersService from '../services/users.service';
 import { User } from '../models/user';
 import {isRequestAuthenticated} from '../middlewares/auth.middleware';
+import {Organization} from '../models/organization';
 
 function listAll(req: Request, res: Response) {
   usersService.findAll().then((users) => {
@@ -138,11 +139,39 @@ function deleteOne(req: Request, res: Response) {
 
 }
 
+function listOrganizations(req: Request, res: Response) {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    res.status(400).send({ error: 'User id must be an integer' });
+    return;
+  }
+
+  usersService.fetchUserOrganizations(id).then((organizations) => {
+    res.send(organizations.map(toCleanOrganization));
+  }).catch((e) => {
+    if (e === usersService.Errors.NOT_FOUND) {
+      res.status(404).send({ error: e.message });
+    } else {
+      res.status(500).send({ error: e.message });
+    }
+  });
+
+}
+
 function toPubliclyRendered(user: User): object {
   return {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
+  };
+}
+
+function toCleanOrganization(organization: Organization) {
+  return {
+    id: organization.id,
+    name: organization.name,
+    description: organization.description,
   };
 }
 
@@ -155,4 +184,4 @@ function toPrivatelyRendered(user: User): object {
   };
 }
 
-export default { listAll, createOne, findOneById, patchOne, deleteOne };
+export default { listAll, createOne, findOneById, patchOne, deleteOne, listOrganizations };

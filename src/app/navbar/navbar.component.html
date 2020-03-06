@@ -10,7 +10,10 @@
         <a class="nav-link" routerLink="/organizations">Organisations</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/profile" *ngIf="isConnected()">Profil</a>
+        <a class="nav-link" routerLink="/me" *ngIf="isConnected()">Profil</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/me/organizations" *ngIf="isConnected()">Mes organisations</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" role="button" *ngIf="isConnected()" (click)="disconnect()">Se déconnecter</a>
