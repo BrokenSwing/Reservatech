@@ -94,7 +94,7 @@ export const isOrganizationMember = () => (req: Request, res: Response, next: Ne
     const id = parseInt(req.params.id, 10);
 
     if (isNaN(id)) {
-      res.status(400).send({ error: 'organization di must be an integer'});
+      res.status(400).send({ error: 'organization id must be an integer'});
       return;
     }
 
