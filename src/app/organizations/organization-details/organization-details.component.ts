@@ -88,7 +88,7 @@ export class OrganizationDetailsComponent implements OnInit {
           if (err.error.error === 'User not found') {
             this.status = { success: false, msg: 'Aucun utilisateur avec cette adresse email n\'existe.' };
           } else if (err.error.error === 'This user is already member of this organization') {
-            this.status = { success: false, msg: 'Cet utilsateur fait déjà parti de cette organisation.' };
+            this.status = { success: false, msg: 'Cet utilisateur fait déjà parti de cette organisation.' };
           }
         } else {
           this.status = { success: false, msg: 'Le serveur rencontre des problèmes. Ré-essayez plus tard.' };
