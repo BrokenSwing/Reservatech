@@ -23,6 +23,8 @@ export class OrganizationDetailsComponent implements OnInit {
   submitting = false;
   status?: { success: boolean, msg: string} = null;
 
+  newMemberEmail = '';
+
   constructor(
     private route: ActivatedRoute,
     private organizationsService: OrganizationsService,
@@ -69,6 +71,30 @@ export class OrganizationDetailsComponent implements OnInit {
           this.status = { success: false, msg: 'Le serveur rencontre des problèmes. Ré-essayez plus tard.' };
         }
       });
+  }
+
+  addMember() {
+    this.submitting = true;
+    this.organizationsService.addMember(this.organization.id, this.newMemberEmail).subscribe(
+      () => {
+        this.newMemberEmail = '';
+        this.submitting = false;
+        this.status = { success: true, msg: 'Nouveau membre ajouté.'};
+        this.organizationsService.getMembersFor(this.organization.id).subscribe((members) => this.members = members);
+      },
+      (err) => {
+        this.submitting = false;
+        if (err.status === 400) {
+          if (err.error.error === 'User not found') {
+            this.status = { success: false, msg: 'Aucun utilisateur avec cette adresse email n\'existe.' };
+          } else if (err.error.error === 'This user is already member of this organization') {
+            this.status = { success: false, msg: 'Cet utilsateur fait déjà parti de cette organisation.' };
+          }
+        } else {
+          this.status = { success: false, msg: 'Le serveur rencontre des problèmes. Ré-essayez plus tard.' };
+        }
+      }
+    );
   }
 
 }

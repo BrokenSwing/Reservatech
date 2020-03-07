@@ -50,4 +50,10 @@ export class OrganizationsService {
     }, { headers: { Authorization: this.authService.authorizationHeader }});
   }
 
+  addMember(organizationId: number, userEmail: string) {
+    return this.http.post<void>(`/api/organizations/${organizationId}/members`, {
+      email: userEmail,
+    }, { headers: { Authorization: this.authService.authorizationHeader }});
+  }
+
 }

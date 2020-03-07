@@ -51,7 +51,10 @@ export function apiRoutes(): Router {
     .delete(authenticated(), isOrganizationMember(), organizationsController.deleteOne)
     .patch(authenticated(), isOrganizationMember(), organizationsController.patchOne);
 
-  organizationsRouter.get('/:id/members', organizationsController.listMembers);
+  organizationsRouter.route('/:id/members')
+    .get(organizationsController.listMembers)
+    .post(authenticated(), isOrganizationMember(), organizationsController.addMember);
+
   organizationsRouter.get('/:id/events', organizationsController.listEvents);
 
   // ROUTERS MOUNTING //

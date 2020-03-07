@@ -1,3 +1,7 @@
+<div class="alert" *ngIf="this.status" [class.alert-danger]="!status.success" [class.alert-success]="status.success">
+  {{status.msg}}
+</div>
+
 <form #updateForm="ngForm">
   <h2 *ngIf="!editing">{{this.organization.name}}</h2>
   <input *ngIf="editing" name="name" class="form-control" type="text" [(ngModel)]="model.name" required>
@@ -22,7 +26,21 @@
 
 <section>
   <h4>Membres</h4>
-  <p *ngFor="let m of members">{{m.firstName}} {{m.lastName}}</p>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item" *ngFor="let m of members">
+      {{m.firstName}} {{m.lastName}}
+      <button class="badge badge-danger badge-pill" *ngIf="isMember()">X</button>
+    </li>
+  </ul>
+  <form #memberForm="ngForm" *ngIf="isMember()" class="form-inline" style="margin-bottom: 10px; margin-top: 10px">
+    <div class="form-group">
+      <input type="email" email class="form-control mx-sm-3 form-control-sm" id="newMemberEmailField"
+             placeholder="Email" [(ngModel)]="newMemberEmail" name="memberEmail" required>
+      <button class="btn btn-primary btn-sm" [disabled]="!memberForm.valid || submitting" (click)="addMember()">
+        Ajouter
+      </button>
+    </div>
+  </form>
 </section>
 
 <section class="list-group list-group-flush">

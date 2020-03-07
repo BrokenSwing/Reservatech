@@ -12,6 +12,7 @@ export const Errors = {
   INVALID_NAME_FORMAT: new Error(`Name must follow format : ${NAME_FORMAT}`),
   UNKNOWN_USER: new Error('No user with the given id exists'),
   DESCRIPTION_FORMAT: new Error(`Description must follow format ${DESCRIPTION_FORMAT}`),
+  ALREADY_MEMBER: new Error('This user is already member of this organization'),
 };
 
 /**
@@ -256,4 +257,46 @@ export async function updateOrganization(id: number, newValues: { name?: string,
     return Promise.reject(Errors.INTERNAL);
   }
 
+}
+
+/**
+ * Add the user with the given id to the members of the organization with the given id.
+ *
+ * This function rejects with Errors.NOT_FOUND if no organization with the given id was found.
+ * This function rejects with Errors.UNKNOWN_USER if no user with the given id exists.
+ * This function rejects with Errors.ALREADY_MEMBER if the user with the given id already is a member of the organization wih the given id.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * @param organizationId the id of the organization to add the user to
+ * @param userId the id of the user to add to the organization
+ *
+ * @return nothing or an error
+ */
+export async function addMember(organizationId: number, userId: number) {
+  try {
+    const organization = await Organization.findByPk(organizationId);
+
+    if (organization === null) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    await OrganizationMember.create({
+      organizationId,
+      userId,
+    });
+
+    return Promise.resolve();
+  } catch (e) {
+    if (e.name && e.name === 'SequelizeForeignKeyConstraintError') {
+      return Promise.reject(Errors.UNKNOWN_USER);
+    }
+
+    if (e.name && e.name === 'SequelizeUniqueConstraintError') {
+      return Promise.reject(Errors.ALREADY_MEMBER);
+    }
+
+    console.error(`Unable to add user ${userId} to organization ${organizationId}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
 }

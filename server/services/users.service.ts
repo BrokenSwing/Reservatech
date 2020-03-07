@@ -29,22 +29,22 @@ export const Errors = {
 export async function findByEmail(email: string): Promise<User> {
 
   try {
-    const user = User.findOne({
+    const user = await User.findOne({
       where: {
         email
       }
     });
 
-    if (user !== null) {
-      return Promise.resolve(user);
+    if (user === null) {
+      return Promise.reject(Errors.NOT_FOUND);
     }
 
-    return Promise.reject(Errors.NOT_FOUND);
+    return Promise.resolve(user);
 
   } catch (e) {
     console.error(`Unable to fetch user from email: ${email}`);
     console.error(e);
-    return Promise.reject(Errors.NOT_FOUND);
+    return Promise.reject(Errors.INTERNAL);
   }
 
 }

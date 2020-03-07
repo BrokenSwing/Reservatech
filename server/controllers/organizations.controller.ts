@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as organizationsService from '../services/organizations.service';
+import * as usersService from '../services/users.service';
 import {isRequestAuthenticated} from '../middlewares/auth.middleware';
 
 function listAll(req: Request, res: Response) {
@@ -162,4 +163,44 @@ function patchOne(req: Request, res: Response) {
 
 }
 
-export default { listAll, findOneById, createOne, deleteOne, listMembers, listEvents, patchOne };
+function addMember(req: Request, res: Response) {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    res.status(400).send({ error: 'Organization id must be an integer' });
+    return;
+  }
+
+  if (req.body && req.body.email) {
+
+    usersService.findByEmail(req.body.email).then((user) => {
+      return organizationsService.addMember(id, user.id);
+    }).then(() => {
+      res.status(201).send({ success: 'Member created' });
+    }).catch((e) => {
+      switch (e) {
+        case organizationsService.Errors.NOT_FOUND:
+          res.status(400).send({ error: e.message });
+          break;
+        case organizationsService.Errors.UNKNOWN_USER:
+        case organizationsService.Errors.ALREADY_MEMBER:
+        case usersService.Errors.NOT_FOUND:
+          res.status(400).send({ error: e.message });
+          break;
+        case organizationsService.Errors.INTERNAL:
+        case usersService.Errors.INTERNAL:
+          res.status(500).send({ error: e.message });
+          break;
+        default:
+          console.error(e);
+          res.status(500).send({ error: 'Internal server error' });
+      }
+    });
+
+  } else {
+    res.status(400).send({ error: 'Missing email value' });
+  }
+
+}
+
+export default { listAll, findOneById, createOne, deleteOne, listMembers, listEvents, patchOne, addMember };
