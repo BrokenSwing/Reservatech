@@ -43,4 +43,11 @@ export class OrganizationsService {
     }, { headers: { Authorization: this.authService.authorizationHeader }});
   }
 
+  patchOne(id: number, name: string, description: string) {
+    return this.http.patch<Organization>(`/api/organizations/${id}`, {
+      name,
+      description,
+    }, { headers: { Authorization: this.authService.authorizationHeader }});
+  }
+
 }

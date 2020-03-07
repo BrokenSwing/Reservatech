@@ -48,7 +48,8 @@ export function apiRoutes(): Router {
 
   organizationsRouter.route('/:id')
     .get(organizationsController.findOneById)
-    .delete(authenticated(), isOrganizationMember(), organizationsController.deleteOne);
+    .delete(authenticated(), isOrganizationMember(), organizationsController.deleteOne)
+    .patch(authenticated(), isOrganizationMember(), organizationsController.patchOne);
 
   organizationsRouter.get('/:id/members', organizationsController.listMembers);
   organizationsRouter.get('/:id/events', organizationsController.listEvents);

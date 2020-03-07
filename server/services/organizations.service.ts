@@ -3,13 +3,15 @@ import * as usersService from '../services/users.service';
 import { OrganizationMember } from '../models/organization-member';
 import { Event } from '../models/event';
 
-const NAME_FORMAT = /^[a-zA-Z\u00C0-\u017F\- ]{1,30}/;
+const NAME_FORMAT = /^[a-zA-Z\u00C0-\u017F\- ]{1,30}$/;
+const DESCRIPTION_FORMAT = /^.{20,300}$/;
 
 export const Errors = {
   NOT_FOUND: new Error('Organization not found'),
   INTERNAL: new Error('Internal error'),
   INVALID_NAME_FORMAT: new Error(`Name must follow format : ${NAME_FORMAT}`),
   UNKNOWN_USER: new Error('No user with the given id exists'),
+  DESCRIPTION_FORMAT: new Error(`Description must follow format ${DESCRIPTION_FORMAT}`),
 };
 
 /**
@@ -66,6 +68,7 @@ export async function findAll(): Promise<Organization[]> {
  * This function rejects with Errors.UNKNOWN_USER if no user with the given id exists.
  * This function rejects with Errors.INVALID_NAME_FORMAT if the given name has an invalid format.
  * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ * This function rejects with Errors.DESCRIPTION_FORMAT if description has an invalid format.
  *
  * @param name the organization name
  * @param desc the organization description
@@ -75,8 +78,15 @@ export async function findAll(): Promise<Organization[]> {
  */
 export async function createOrganization(name: string, desc: string, owner: number): Promise<Organization> {
 
+  name = name.trim();
+  desc = desc.trim();
+
   if (!NAME_FORMAT.test(name)) {
     return Promise.reject(Errors.INVALID_NAME_FORMAT);
+  }
+
+  if (!DESCRIPTION_FORMAT.test(desc)) {
+    return Promise.reject(Errors.DESCRIPTION_FORMAT);
   }
 
   try {
@@ -198,6 +208,50 @@ export async function findOrganizationEvents(id: number): Promise<Event[]> {
     return Promise.resolve(events);
   } catch (e) {
     console.error(`Unable to retrieve events for organization with id ${id}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
+
+}
+
+/**
+ * Updates the organization with the given id replacing it's properties with the given ones.
+ *
+ * This function rejects with Errors.NOT_FOUND if no organization with the given id was found.
+ * This function rejects with Errors.NAME_FORMAT if the given name doesn't match required format.
+ * This function rejects with Errors.DESCRIPTION_FORMAT if the given description doesn't match required format.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * If a new value for a property isn't give, it won't update it and therefor won't be validated.
+ *
+ * @param id the id of the organization to update
+ * @param newValues the new values for the organization properties
+ *
+ * @return the updated organization or an error
+ */
+export async function updateOrganization(id: number, newValues: { name?: string, description?: string}) {
+
+  if (newValues.name && !NAME_FORMAT.test(newValues.name.trim())) {
+    return Promise.reject(Errors.INVALID_NAME_FORMAT);
+  }
+
+  if (newValues.description && !DESCRIPTION_FORMAT.test(newValues.description.trim())) {
+    return Promise.reject(Errors.DESCRIPTION_FORMAT);
+  }
+
+  try {
+    const organization: Organization = await Organization.findByPk(id);
+
+    if (organization === null) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    await organization.update({ ...newValues });
+
+    return Promise.resolve(organization);
+
+  } catch (e) {
+    console.error(`Unable to update organization with id ${id}`);
     console.error(e);
     return Promise.reject(Errors.INTERNAL);
   }
