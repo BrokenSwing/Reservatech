@@ -5,6 +5,7 @@ import {AuthService} from '../../auth.service';
 import {OrganizationsService} from '../../organizations/organizations.service';
 import {EventUpdateModel} from './event-update-model';
 import {EventsService} from '../events.service';
+import {User} from '../../users/user';
 
 @Component({
   selector: 'app-event',
@@ -19,6 +20,7 @@ export class EventComponent implements OnInit {
   submitting = false;
   status?: { success: boolean, msg: string} = null;
   participants: number[] = [];
+  participatingUsers: User[] = [];
 
   model: EventUpdateModel = new EventUpdateModel('', '');
 
@@ -36,8 +38,12 @@ export class EventComponent implements OnInit {
         });
       }
 
-      this.eventsService.getAllParticipants(this.event.id, this.event.organizationId).subscribe(
+      this.eventsService.getAllParticipantsIds(this.event.id, this.event.organizationId).subscribe(
         (participants) => this.participants = participants
+      );
+
+      this.eventsService.getAllParticipants(this.event.id, this.event.organizationId).subscribe(
+        (participants) => this.participatingUsers = participants
       );
 
     });

@@ -43,3 +43,10 @@
     Abandonner ma réservation
   </button>
 </section>
+
+<section *ngIf="this.canEdit()">
+  <h4>Participants</h4>
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let p of this.participatingUsers">{{p.firstName}} {{p.lastName}}</li>
+  </ul>
+</section>
