@@ -6,6 +6,7 @@ import {OrganizationsService} from '../../organizations/organizations.service';
 import {EventUpdateModel} from './event-update-model';
 import {EventsService} from '../events.service';
 import {User} from '../../users/user';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-event',
@@ -137,6 +138,10 @@ export class EventComponent implements OnInit {
           this.status = { success: false, msg: 'Le serveur rencontre des problèmes. Ré-essayez plus tard.' };
         }
       });
+  }
+
+  calendar(d: Date) {
+    return moment(d, undefined, 'fr').calendar();
   }
 
 }

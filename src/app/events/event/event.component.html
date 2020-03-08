@@ -28,6 +28,8 @@
 <hr>
 
 <section>
+  Débute : {{calendar(this.event.beginning)}}<br>
+  Termine : {{calendar(this.event.end)}}
   <h4>Inscription</h4>
   <p>{{this.event.maxParticipants}} places, {{this.event.maxParticipants - this.participants.length}} restantes</p>
   <button class="btn btn-primary"
