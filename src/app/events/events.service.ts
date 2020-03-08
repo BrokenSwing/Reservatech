@@ -29,4 +29,11 @@ export class EventsService {
     }, { headers: { Authorization: this.authService.authorizationHeader }});
   }
 
+  updateEvent(eventId: number, organizationId: number, name: string, description: string) {
+    return this.http.patch<Event>(`/api/organizations/${organizationId}/events/${eventId}`, {
+      name,
+      description,
+    }, { headers: { Authorization: this.authService.authorizationHeader }});
+  }
+
 }

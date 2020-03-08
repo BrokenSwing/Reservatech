@@ -1,11 +1,13 @@
 import { Event } from '../models/event';
 
-const NAME_FORMAT = /^[a-zA-Z\u00C0-\u017F\- ]{1,30}/;
+const NAME_FORMAT = /^[a-zA-Z\u00C0-\u017F\- ]{1,30}$/;
+const DESCRIPTION_FORMAT = /^.{30,800}$/;
 
 export const Errors = {
     NOT_FOUND: new Error('Event not found'),
     INTERNAL: new Error('Internal error'),
     INVALID_NAME: new Error(`Invalid name format, must follow rules : ${NAME_FORMAT}`),
+    INVALID_DESCRIPTION: new Error(`Invalid description format, must follow rules : ${DESCRIPTION_FORMAT}`),
     INVALID_DATE_ORDER: new Error('Beginning date must be anterior to end date'),
     UNKNOWN_ORGANIZATION: new Error('Unknown organization'),
     INVALID_MAX_PARTICIPANTS: new Error('Invalid max participants: must be greater than 0')
@@ -107,5 +109,57 @@ export async function createEvent(
     return Promise.reject(Errors.INTERNAL);
   }
 
+
+}
+
+/**
+ * Updates the properties of the event with the given id.
+ *
+ * This function rejects with Errors.INVALID_NAME if given name doesn't match required format.
+ * This function rejects with Errors.INVALID_DESCRIPTION if given description doesn't match required format.
+ * This function rejects with Errors.NOT_FOUND if no event with the given id exists.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * @param id the id of the event to update properties for
+ * @param values the new values to set for the properties of the event
+ *
+ * @return the updated event, or an event
+ */
+export async function updateEvent(id: number, values: { name?: string, description?: string}) {
+
+  if (values.name) {
+    values.name = values.name.trim();
+  }
+
+  if (values.description) {
+    values.description = values.description.trim();
+  }
+
+  if (values.name && !NAME_FORMAT.test(values.name)) {
+    return Promise.reject(Errors.INVALID_NAME);
+  }
+
+  if (values.description && !DESCRIPTION_FORMAT.test(values.description)) {
+    return Promise.reject(Errors.INVALID_DESCRIPTION);
+  }
+
+  try {
+    const event = await Event.findByPk(id);
+
+    if (event === null) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    await event.update({
+      name: values.name,
+      description: values.description,
+    });
+
+    return Promise.resolve(event);
+  } catch (e) {
+    console.error(`Unable to update event ${id}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
 
 }

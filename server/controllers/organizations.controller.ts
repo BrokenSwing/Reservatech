@@ -3,6 +3,7 @@ import * as organizationsService from '../services/organizations.service';
 import * as usersService from '../services/users.service';
 import {isRequestAuthenticated} from '../middlewares/auth.middleware';
 import {toPubliclyRendered} from './users.controller';
+import * as eventsService from '../services/events.service';
 
 function listAll(req: Request, res: Response) {
   organizationsService.findAll().then((organizations) => {
@@ -267,4 +268,39 @@ function findMember(req: Request, res: Response) {
 
 }
 
-export default { listAll, findOneById, createOne, deleteOne, listMembers, listEvents, patchOne, addMember, deleteMember, findMember };
+function updateEvent(req: Request, res: Response) {
+  const id = parseInt(req.params.eventId, 10);
+
+  if (isNaN(id)) {
+    res.status(400).send({ error: 'Event id must be an integer' });
+    return;
+  }
+
+  const b = req.body;
+  if (b && (b.name || b.description)) {
+
+    eventsService.updateEvent(id, { name: b.name, description: b.description })
+      .then((event) => {
+        res.send(event);
+      }).catch((e) => {
+      switch (e) {
+        case eventsService.Errors.NOT_FOUND:
+          res.status(404).send({ error: e.message });
+          break;
+        case eventsService.Errors.INVALID_DESCRIPTION:
+        case eventsService.Errors.INVALID_NAME:
+          res.status(400).send({ error: e.message });
+          break;
+        case eventsService.Errors.INTERNAL:
+          res.status(500).send({ error: e.message });
+      }
+    });
+
+  } else {
+    res.status(400).send({ error: 'Missing one of: name, description' });
+  }
+
+}
+
+export default { listAll, findOneById, createOne, deleteOne, listMembers,
+  listEvents, patchOne, addMember, deleteMember, findMember, patchEvent: updateEvent };

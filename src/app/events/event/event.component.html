@@ -1,4 +1,25 @@
-<h2>{{event.name}}</h2>
+<div class="alert" *ngIf="this.status" [class.alert-danger]="!status.success" [class.alert-success]="status.success">
+  {{status.msg}}
+</div>
 
-<small>Description :</small>
-<p>{{event.description}}</p>
+<form #updateForm="ngForm">
+  <h2 *ngIf="!editing">{{this.event.name}}</h2>
+  <input *ngIf="editing" name="name" class="form-control" type="text" [(ngModel)]="model.name" required>
+
+  <button *ngIf="canEdit() && !editing" class="btn btn-link" (click)="switchEdit()">Edit</button>
+  <button *ngIf="editing" class="btn btn-link" (click)="switchEdit()">Annuler</button>
+  <button *ngIf="editing"
+          class="btn btn-link"
+          type="submit"
+          (click)="save()"
+          [disabled]="!updateForm.valid || submitting"
+  >
+    Sauvegarder
+  </button>
+  <hr>
+
+  <small>Description :</small>
+  <p *ngIf="!editing">{{this.event.description}}</p>
+  <textarea *ngIf="editing" class="form-control" name="description"
+            [(ngModel)]="model.description" required minlength="20" maxlength="300"></textarea>
+</form>
