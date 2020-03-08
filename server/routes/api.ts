@@ -6,6 +6,7 @@ import usersController from '../controllers/users.controller';
 import authController from '../controllers/auth.controller';
 
 import { authenticated, resourceOwned, isOrganizationMember } from '../middlewares/auth.middleware';
+import {bodyKeyExtractor} from '../utils/extractors';
 
 export function apiRoutes(): Router {
 
@@ -18,8 +19,9 @@ export function apiRoutes(): Router {
   // EVENTS API //
 
   const eventsRouter = Router();
-  eventsRouter.get('/', eventsController.listAll);
-  eventsRouter.post('/', eventsController.createOne);
+  eventsRouter.route('/')
+    .get(eventsController.listAll)
+    .post(authenticated(), isOrganizationMember(bodyKeyExtractor('organization')), eventsController.createOne);
 
   eventsRouter.get('/:id', eventsController.findOnyById);
 

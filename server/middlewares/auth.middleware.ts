@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as tokensService from '../services/tokens.service';
 import * as organizationsService from '../services/organizations.service';
+import {KeyExtractor} from '../utils/extractors';
 
 const BEARER_LENGTH = 'Bearer '.length;
 
@@ -88,10 +89,13 @@ export const resourceOwned = () => (req: Request, res: Response, next: NextFunct
  *
  * If the user is a member of the organization with the provided id, then it
  * forwards the request.
+ *
+ * @param extractor a function returning the organization id to check against
  */
-export const isOrganizationMember = () => (req: Request, res: Response, next: NextFunction) => {
+export const isOrganizationMember = (extractor: KeyExtractor = (req) => req.params.id) =>
+  (req: Request, res: Response, next: NextFunction) => {
   if (isRequestAuthenticated(req)) {
-    const id = parseInt(req.params.id, 10);
+    const id = parseInt(extractor(req), 10);
 
     if (isNaN(id)) {
       res.status(400).send({ error: 'organization id must be an integer'});
@@ -116,3 +120,5 @@ export const isOrganizationMember = () => (req: Request, res: Response, next: Ne
     res.status(401).send({ error: 'Unauthorized' });
   }
 };
+
+

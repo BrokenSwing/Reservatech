@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as eventsService from '../services/events.service';
+import * as moment from 'moment';
 
 function listAll(req: Request, res: Response) {
   eventsService.findAll().then((events) => {
@@ -38,6 +39,11 @@ function createOne(req: Request, res: Response)   {
     const endAt = new Date(b.end);
     if (isNaN(endAt.getTime())) {
       res.status(400).send({ error: 'Invalid end date '});
+      return;
+    }
+
+    if (moment(beginAt).isAfter(endAt)) {
+      res.status(400).send({ error: 'Beginning date must be before end date' });
       return;
     }
 
