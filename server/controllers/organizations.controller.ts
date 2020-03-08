@@ -69,8 +69,6 @@ function createOne(req: Request, res: Response) {
 
 function deleteOne(req: Request, res: Response) {
 
-  // TODO: check if user is a member
-
   const id = parseInt(req.params.id, 10);
 
   if (isNaN(id)) {
@@ -79,7 +77,7 @@ function deleteOne(req: Request, res: Response) {
   }
 
   organizationsService.deleteOrganization(id).then(() => {
-    res.status(404).send({ success: 'Deleted' });
+    res.send({ success: 'Deleted' });
   }).catch((e) => {
     if (e === organizationsService.Errors.NOT_FOUND) {
       res.status(404).send({ error: e.message });
@@ -203,4 +201,40 @@ function addMember(req: Request, res: Response) {
 
 }
 
-export default { listAll, findOneById, createOne, deleteOne, listMembers, listEvents, patchOne, addMember };
+function deleteMember(req: Request, res: Response) {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    res.status(400).send({ error: 'Organization id must be an integer' });
+    return;
+  }
+
+  const userId = parseInt(req.params.userId, 10);
+
+  if (isNaN(userId)) {
+    res.status(400).send({ error: 'Member id value must be an integer' });
+    return;
+  }
+
+  organizationsService.deleteMember(id, userId).then((organizationRemoved) => {
+
+    res.send({
+      success: 'Member removed',
+      organizationDeleted: organizationRemoved,
+    });
+
+  }).catch((e) => {
+    switch (e) {
+      case organizationsService.Errors.NOT_FOUND:
+      case organizationsService.Errors.NOT_A_MEMBER:
+        res.status(404).send({ error: e.message });
+        break;
+      case organizationsService.Errors.INTERNAL:
+        res.status(500).send({ error: e.message });
+        break;
+    }
+  });
+
+}
+
+export default { listAll, findOneById, createOne, deleteOne, listMembers, listEvents, patchOne, addMember, deleteMember };

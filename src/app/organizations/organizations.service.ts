@@ -56,4 +56,13 @@ export class OrganizationsService {
     }, { headers: { Authorization: this.authService.authorizationHeader }});
   }
 
+  removeMember(organizationId: number, userId: number) {
+    return this.http.delete<{success: string, organizationDeleted: boolean}>(
+      `/api/organizations/${organizationId}/members/${userId}`, {
+      headers: {
+        Authorization: this.authService.authorizationHeader,
+      }
+    });
+  }
+
 }

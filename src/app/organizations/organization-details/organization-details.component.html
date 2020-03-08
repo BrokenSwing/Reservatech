@@ -29,7 +29,11 @@
   <ul class="list-group list-group-flush">
     <li class="list-group-item" *ngFor="let m of members">
       {{m.firstName}} {{m.lastName}}
-      <button class="badge badge-danger badge-pill" *ngIf="isMember()">X</button>
+      <button class="badge badge-danger badge-pill" *ngIf="isMember()" (click)="removedMember(m.id)"
+              [disabled]="submitting"
+      >
+        X
+      </button>
     </li>
   </ul>
   <form #memberForm="ngForm" *ngIf="isMember()" class="form-inline" style="margin-bottom: 10px; margin-top: 10px">

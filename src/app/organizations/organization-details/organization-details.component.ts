@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Organization} from '../organization';
 import {User} from '../../users/user';
 import {OrganizationsService} from '../organizations.service';
@@ -28,7 +28,8 @@ export class OrganizationDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private organizationsService: OrganizationsService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -92,6 +93,32 @@ export class OrganizationDetailsComponent implements OnInit {
           }
         } else {
           this.status = { success: false, msg: 'Le serveur rencontre des problèmes. Ré-essayez plus tard.' };
+        }
+      }
+    );
+  }
+
+  removedMember(id: number) {
+    this.submitting = true;
+    this.organizationsService.removeMember(this.organization.id, id).subscribe(
+      (res) => {
+        if (res.organizationDeleted) {
+          this.router.navigate(['me', 'organizations']);
+        } else {
+          this.members = this.members.filter((user) => user.id !== id);
+          this.status = { success: true, msg: 'Membre supprimé' };
+        }
+        this.submitting = false;
+      },
+      (err) => {
+        this.submitting = false;
+        if (err.status === 404 && err.error.error === 'Organization not found') {
+          this.status = { success: false, msg: 'Cette organisation semble ne plus exister.' };
+        } else if (err.status === 404 && err.error.error === 'This user is not a member of the organization.') {
+          this.status = { success: false, msg: 'Cet utilisateur ne fait pas partie de cette organisation.' };
+          this.members.filter((user) => user.id !== id); // Remove user from list, he shouldn't be there
+        } else {
+          this.status = { success: false, msg: 'Le serveur rencontre des problèmes. Ré-essayez plus tard.'};
         }
       }
     );

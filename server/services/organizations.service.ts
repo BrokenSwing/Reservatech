@@ -13,6 +13,7 @@ export const Errors = {
   UNKNOWN_USER: new Error('No user with the given id exists'),
   DESCRIPTION_FORMAT: new Error(`Description must follow format ${DESCRIPTION_FORMAT}`),
   ALREADY_MEMBER: new Error('This user is already member of this organization'),
+  NOT_A_MEMBER: new Error('This user is not a member of the organization'),
 };
 
 /**
@@ -299,4 +300,60 @@ export async function addMember(organizationId: number, userId: number) {
     console.error(e);
     return Promise.reject(Errors.INTERNAL);
   }
+}
+
+/**
+ * Deletes the user with the given id from the members list of the organization with the given id.
+ * If, once the user removed from members list, the organization contains no member, the organization is deleted.
+ *
+ * This function rejects with Errors.NOT_FOUND if no organization with the given id exists.
+ * This function rejects with Errors.NOT_A_MEMBER if the no user with the given id was found in members list.
+ * THis function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ *
+ * @param organizationId the id of the organization to delete a member from
+ * @param userId the id of the user which is member you want to delete from organization members list
+ *
+ * @return true if user is removed from members list and organization is deleted, false if user is removed from members list and
+ * organization isn't deleted, an error if something gone wrong
+ */
+export async function deleteMember(organizationId: number, userId: number) {
+
+  try {
+    const organization: Organization = await Organization.findByPk(organizationId);
+
+    if (organization === null) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    const destroyedCount: number = await OrganizationMember.destroy({
+      where: {
+        organizationId: organization.id,
+        userId,
+      }
+    });
+
+    if (destroyedCount === 0) {
+      return Promise.reject(Errors.NOT_A_MEMBER);
+    }
+
+    const membersCount: number = await OrganizationMember.count({
+      where: {
+        organizationId: organization.id,
+      }
+    });
+
+    if (membersCount === 0) {
+      await organization.destroy();
+      return Promise.resolve(true);
+    }
+
+    return Promise.resolve(false);
+
+  } catch (e) {
+    console.error(`Unable to remove member ${userId} from organization ${organizationId}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
+
 }
