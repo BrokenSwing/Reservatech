@@ -380,12 +380,13 @@ export async function findMember(organizationId: number, userId: number): Promis
       return Promise.reject(Errors.NOT_FOUND);
     }
 
-    const member: User = await OrganizationMember.findOne({
-      where: {
-        organizationId: organization.id,
-        userId,
-      },
-      include: [User]
+    const member: User = await User.findByPk(userId, {
+      include: [{
+        model: Organization,
+        where: {
+          id: organizationId,
+        }
+      }]
     });
 
     if (member === null) {
