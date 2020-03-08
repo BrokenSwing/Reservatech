@@ -30,11 +30,10 @@ models.init().then(() => {
   app.use('/api', apiRoutes());
 
   app.get('*', express.static(DIST_FOLDER, {
-    maxAge: '0', // TODO: Change max age
+    maxAge: '1y',
   }));
 
   app.get('*', (req, res) => {
-      // TODO: Add cache policy
       res.sendFile(join(DIST_FOLDER, 'index.html'));
   });
 
