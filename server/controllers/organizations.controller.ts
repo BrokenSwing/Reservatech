@@ -4,7 +4,6 @@ import * as usersService from '../services/users.service';
 import {isRequestAuthenticated} from '../middlewares/auth.middleware';
 import {toPubliclyRendered} from './users.controller';
 import * as eventsService from '../services/events.service';
-import {eventTargetLegacyPatch} from 'zone.js/lib/browser/event-target-legacy';
 
 function listAll(req: Request, res: Response) {
   organizationsService.findAll().then((organizations) => {
