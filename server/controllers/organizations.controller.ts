@@ -4,6 +4,7 @@ import * as usersService from '../services/users.service';
 import {isRequestAuthenticated} from '../middlewares/auth.middleware';
 import {toPubliclyRendered} from './users.controller';
 import * as eventsService from '../services/events.service';
+import {eventTargetLegacyPatch} from 'zone.js/lib/browser/event-target-legacy';
 
 function listAll(req: Request, res: Response) {
   organizationsService.findAll().then((organizations) => {
@@ -302,5 +303,25 @@ function updateEvent(req: Request, res: Response) {
 
 }
 
+function deleteEvent(req: Request, res: Response) {
+  const id = parseInt(req.params.eventId, 10);
+
+  if (isNaN(id)) {
+    res.status(400).send({ error: 'Event id must be an integer' });
+    return;
+  }
+
+  eventsService.deleteEvent(id).then(() => {
+    res.send({ success: 'Event deleted' });
+  }).catch((e) => {
+    if (e === usersService.Errors.NOT_FOUND) {
+      res.status(400).send({ error: e.message });
+    } else {
+      res.status(500).send({ error: e.message });
+    }
+  });
+
+}
+
 export default { listAll, findOneById, createOne, deleteOne, listMembers,
-  listEvents, patchOne, addMember, deleteMember, findMember, patchEvent: updateEvent };
+  listEvents, patchOne, addMember, deleteMember, findMember, patchEvent: updateEvent, deleteEvent };

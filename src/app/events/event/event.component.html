@@ -6,7 +6,8 @@
   <h2 *ngIf="!editing">{{this.event.name}}</h2>
   <input *ngIf="editing" name="name" class="form-control" type="text" [(ngModel)]="model.name" maxlength="30" required>
 
-  <button *ngIf="canEdit() && !editing" class="btn btn-link" (click)="switchEdit()">Edit</button>
+  <button *ngIf="canEdit() && !editing" class="btn btn-link" (click)="switchEdit()">Editer</button>
+  <button *ngIf="canEdit() && !editing" class="btn btn-link text-danger" (click)="deleteEvent()">Supprimer</button>
   <button *ngIf="editing" class="btn btn-link" (click)="switchEdit()">Annuler</button>
   <button *ngIf="editing"
           class="btn btn-link"

@@ -125,7 +125,7 @@ export async function createEvent(
  *
  * @return the updated event, or an event
  */
-export async function updateEvent(id: number, values: { name?: string, description?: string}) {
+export async function updateEvent(id: number, values: { name?: string, description?: string}): Promise<Event> {
 
   if (values.name) {
     values.name = values.name.trim();
@@ -158,6 +158,38 @@ export async function updateEvent(id: number, values: { name?: string, descripti
     return Promise.resolve(event);
   } catch (e) {
     console.error(`Unable to update event ${id}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
+
+}
+
+/**
+ * Deletes the event with the given id.
+ *
+ * This function rejects with Errors.NOT_FOUND if no event with the given id exists.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * @param id the id of the event to delete
+ *
+ * @return nothing or an error
+ */
+export async function deleteEvent(id: number) {
+
+  try {
+    const deletedCount = await Event.destroy({
+      where: {
+        id,
+      }
+    });
+
+    if (deletedCount === 0) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    return Promise.resolve();
+  } catch (e) {
+    console.error(`Unable to remove event ${id}`);
     console.error(e);
     return Promise.reject(Errors.INTERNAL);
   }

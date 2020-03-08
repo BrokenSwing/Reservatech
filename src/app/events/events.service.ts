@@ -36,4 +36,12 @@ export class EventsService {
     }, { headers: { Authorization: this.authService.authorizationHeader }});
   }
 
+  deleteEvent(eventId: number, organizationId: number) {
+    return this.http.delete<void>(`/api/organizations/${organizationId}/events/${eventId}`, {
+      headers: {
+        Authorization: this.authService.authorizationHeader,
+      }
+    });
+  }
+
 }

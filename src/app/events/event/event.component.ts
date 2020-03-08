@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Event } from '../event';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {AuthService} from '../../auth.service';
 import {OrganizationsService} from '../../organizations/organizations.service';
 import {EventUpdateModel} from './event-update-model';
@@ -21,7 +21,7 @@ export class EventComponent implements OnInit {
 
   model: EventUpdateModel = new EventUpdateModel('', '');
 
-  constructor(private route: ActivatedRoute, private authService: AuthService,
+  constructor(private route: ActivatedRoute, private authService: AuthService, private router: Router,
               private organizationsService: OrganizationsService, private eventsService: EventsService) { }
 
   ngOnInit() {
@@ -66,6 +66,21 @@ export class EventComponent implements OnInit {
           }
         }
       );
+  }
+
+  deleteEvent() {
+    this.submitting = true;
+    this.eventsService.deleteEvent(this.event.id, this.event.organizationId)
+      .subscribe(() => {
+        this.router.navigate(['organizations', this.event.organizationId]);
+      }, (err) => {
+        this.submitting = false;
+        if (err.status === 404) {
+          this.status = { success: false, msg: 'Cet événement semble ne déjà plus exister.' };
+        } else {
+          this.status = { success: false, msg: 'Le serveur rencontre des problèmes. Ré-essayez plus tard.' };
+        }
+      });
   }
 
 }
