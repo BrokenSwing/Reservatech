@@ -185,3 +185,4 @@ function toPrivatelyRendered(user: User): object {
 }
 
 export default { listAll, createOne, findOneById, patchOne, deleteOne, listOrganizations };
+export { toPubliclyRendered, toCleanOrganization, toPrivatelyRendered };

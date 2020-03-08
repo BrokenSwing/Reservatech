@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import * as organizationsService from '../services/organizations.service';
 import * as usersService from '../services/users.service';
 import {isRequestAuthenticated} from '../middlewares/auth.middleware';
+import {toPubliclyRendered} from './users.controller';
 
 function listAll(req: Request, res: Response) {
   organizationsService.findAll().then((organizations) => {
@@ -237,4 +238,33 @@ function deleteMember(req: Request, res: Response) {
 
 }
 
-export default { listAll, findOneById, createOne, deleteOne, listMembers, listEvents, patchOne, addMember, deleteMember };
+function findMember(req: Request, res: Response) {
+  const orgId = parseInt(req.params.id, 10);
+  if (isNaN(orgId)) {
+    res.status(400).send({ error: 'Organization id must be an integer' });
+    return;
+  }
+
+  const userId = parseInt(req.params.userId, 10);
+  if (isNaN(userId)) {
+    res.status(400).send({ error: 'Member id must be an integer' });
+    return;
+  }
+
+  organizationsService.findMember(orgId, userId).then((member) => {
+    res.send(toPubliclyRendered(member));
+  }).catch((e) => {
+      switch (e) {
+        case organizationsService.Errors.NOT_FOUND:
+        case organizationsService.Errors.NOT_A_MEMBER:
+          res.status(404).send({ error: e.message });
+          break;
+        case organizationsService.Errors.INTERNAL:
+          res.status(500).send({ error: e.message });
+          break;
+      }
+  });
+
+}
+
+export default { listAll, findOneById, createOne, deleteOne, listMembers, listEvents, patchOne, addMember, deleteMember, findMember };

@@ -56,6 +56,7 @@ export function apiRoutes(): Router {
     .post(authenticated(), isOrganizationMember(), organizationsController.addMember);
 
   organizationsRouter.route('/:id/members/:userId')
+    .get(organizationsController.findMember)
     .delete(authenticated(), isOrganizationMember(), organizationsController.deleteMember);
 
   organizationsRouter.get('/:id/events', organizationsController.listEvents);

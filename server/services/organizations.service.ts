@@ -2,6 +2,7 @@ import { Organization } from '../models/organization';
 import * as usersService from '../services/users.service';
 import { OrganizationMember } from '../models/organization-member';
 import { Event } from '../models/event';
+import {User} from '../models/user';
 
 const NAME_FORMAT = /^[a-zA-Z\u00C0-\u017F\- ]{1,30}$/;
 const DESCRIPTION_FORMAT = /^.{20,300}$/;
@@ -231,7 +232,7 @@ export async function findOrganizationEvents(id: number): Promise<Event[]> {
  *
  * @return the updated organization or an error
  */
-export async function updateOrganization(id: number, newValues: { name?: string, description?: string}) {
+export async function updateOrganization(id: number, newValues: { name?: string, description?: string}): Promise<Organization> {
 
   if (newValues.name && !NAME_FORMAT.test(newValues.name.trim())) {
     return Promise.reject(Errors.INVALID_NAME_FORMAT);
@@ -273,7 +274,7 @@ export async function updateOrganization(id: number, newValues: { name?: string,
  *
  * @return nothing or an error
  */
-export async function addMember(organizationId: number, userId: number) {
+export async function addMember(organizationId: number, userId: number): Promise<void> {
   try {
     const organization = await Organization.findByPk(organizationId);
 
@@ -317,7 +318,7 @@ export async function addMember(organizationId: number, userId: number) {
  * @return true if user is removed from members list and organization is deleted, false if user is removed from members list and
  * organization isn't deleted, an error if something gone wrong
  */
-export async function deleteMember(organizationId: number, userId: number) {
+export async function deleteMember(organizationId: number, userId: number): Promise<boolean> {
 
   try {
     const organization: Organization = await Organization.findByPk(organizationId);
@@ -352,6 +353,48 @@ export async function deleteMember(organizationId: number, userId: number) {
 
   } catch (e) {
     console.error(`Unable to remove member ${userId} from organization ${organizationId}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
+
+}
+
+/**
+ * Finds the user with given id in members list of organization with the given id.
+ *
+ * This function rejects with Errors.NOT_FOUND if no organization with the given id exists.
+ * This function rejects with Errors.NOT_A_MEMBER if no user with the given id exists in organization members list.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * @param organizationId the id of the organization to search member in
+ * @param userId the id of the user to find in organization members list
+ *
+ * @return the member, or an error
+ */
+export async function findMember(organizationId: number, userId: number): Promise<User> {
+
+  try {
+    const organization: Organization = await Organization.findByPk(organizationId);
+
+    if (organization === null) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    const member: User = await OrganizationMember.findOne({
+      where: {
+        organizationId: organization.id,
+        userId,
+      },
+      include: [User]
+    });
+
+    if (member === null) {
+      return Promise.reject(Errors.NOT_A_MEMBER);
+    }
+
+    return Promise.resolve(member);
+  } catch (e) {
+    console.error(`Unable to retrieve member with id ${userId} for organization ${organizationId}`);
     console.error(e);
     return Promise.reject(Errors.INTERNAL);
   }
