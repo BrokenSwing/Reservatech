@@ -44,4 +44,24 @@ export class EventsService {
     });
   }
 
+  participate(eventId: number, organizationId: number) {
+    return this.http.post<Event>(`/api/organizations/${organizationId}/events/${eventId}/participants`, {}, {
+      headers: {
+        Authorization: this.authService.authorizationHeader,
+      }
+    });
+  }
+
+  getAllParticipants(eventId: number, organizationId: number) {
+    return this.http.get<number[]>(`/api/organizations/${organizationId}/events/${eventId}/participants`);
+  }
+
+  stopParticipating(eventId: number, organizationId: number) {
+    return this.http.delete<Event>(`/api/organizations/${organizationId}/events/${eventId}/participants`, {
+      headers: {
+        Authorization: this.authService.authorizationHeader,
+      }
+    });
+  }
+
 }

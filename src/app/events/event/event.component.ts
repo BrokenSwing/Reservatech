@@ -18,6 +18,7 @@ export class EventComponent implements OnInit {
   editing = false;
   submitting = false;
   status?: { success: boolean, msg: string} = null;
+  participants: number[] = [];
 
   model: EventUpdateModel = new EventUpdateModel('', '');
 
@@ -28,11 +29,17 @@ export class EventComponent implements OnInit {
     this.route.data.subscribe((data: { event: Event }) => {
       this.event = data.event;
       this.model = new EventUpdateModel(this.event.name, this.event.description);
+
       if (this.authService.isConnected()) {
         this.organizationsService.getMembersIdsFor(this.event.organizationId).subscribe((ids) => {
           this.editable = ids.includes(this.authService.getUserInfo().userId);
         });
       }
+
+      this.eventsService.getAllParticipants(this.event.id, this.event.organizationId).subscribe(
+        (participants) => this.participants = participants
+      );
+
     });
   }
 
@@ -77,6 +84,49 @@ export class EventComponent implements OnInit {
         this.submitting = false;
         if (err.status === 404) {
           this.status = { success: false, msg: 'Cet événement semble ne déjà plus exister.' };
+        } else {
+          this.status = { success: false, msg: 'Le serveur rencontre des problèmes. Ré-essayez plus tard.' };
+        }
+      });
+  }
+
+  connected() {
+    return this.authService.isConnected();
+  }
+
+  participate() {
+    this.submitting = true;
+    this.eventsService.participate(this.event.id, this.event.organizationId)
+      .subscribe((event: Event) => {
+        this.submitting = false;
+        this.status = { success: true, msg: 'Vous êtes maintenant inscrit à cet événement' };
+        this.event = event;
+        this.participants.push(this.authService.getUserInfo().userId);
+      }, (err) => {
+        this.submitting = false;
+        if (err.status === 400) {
+          this.status = { success: false, msg: 'Il n\'y a plus de place' };
+        } else {
+          this.status = { success: false, msg: 'Le serveur rencontre des problèmes. Ré-essayez plus tard.'};
+        }
+      });
+  }
+
+  participating() {
+    return this.participants.includes(this.authService.getUserInfo().userId);
+  }
+
+  stopParticipating() {
+    this.submitting = true;
+    this.eventsService.stopParticipating(this.event.id, this.event.organizationId)
+      .subscribe(() => {
+        this.submitting = false;
+        this.participants = this.participants.filter(id => id !== this.authService.getUserInfo().userId);
+        this.status = { success: true, msg: 'Vous ne participez plus à cet événement.' };
+      }, (err) => {
+        this.submitting = false;
+        if (err.status === 400) {
+          this.status = { success: false, msg: 'Il semblerai que cet événement n\'existe plus.'};
         } else {
           this.status = { success: false, msg: 'Le serveur rencontre des problèmes. Ré-essayez plus tard.' };
         }

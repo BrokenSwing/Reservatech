@@ -124,4 +124,19 @@ export class OrganizationDetailsComponent implements OnInit {
     );
   }
 
+  deleteOrg() {
+    this.submitting = true;
+    this.organizationsService.deleteOrganization(this.organization.id)
+      .subscribe(() => {
+        this.router.navigate(['me', 'organizations']);
+      }, (err) => {
+        this.submitting = false;
+        if (err.status === 404) {
+          this.status = { success: false, msg: 'Cet organisation semble ne déjà plus exister.' };
+        } else {
+          this.status = { success: false, msg: 'Le serveur rencontre des problèmes. Ré-essayez plus tard.' };
+        }
+      });
+  }
+
 }

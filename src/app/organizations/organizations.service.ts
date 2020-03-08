@@ -65,4 +65,12 @@ export class OrganizationsService {
     });
   }
 
+  deleteOrganization(organizationId: number) {
+    return this.http.delete<void>(`/api/organizations/${organizationId}`, {
+      headers: {
+        Authorization: this.authService.authorizationHeader,
+      }
+    });
+  }
+
 }

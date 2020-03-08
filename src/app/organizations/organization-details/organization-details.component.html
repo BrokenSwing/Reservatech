@@ -6,7 +6,8 @@
   <h2 *ngIf="!editing">{{this.organization.name}}</h2>
   <input *ngIf="editing" name="name" class="form-control" type="text" [(ngModel)]="model.name" required>
 
-  <button *ngIf="isMember() && !editing" class="btn btn-link" (click)="switchEdit()">Edit</button>
+  <button *ngIf="isMember() && !editing" class="btn btn-link" (click)="switchEdit()">Editer</button>
+  <button *ngIf="isMember() && !editing" class="btn btn-link text-danger" (click)="deleteOrg()">Supprimer</button>
   <button *ngIf="editing" class="btn btn-link" (click)="switchEdit()">Annuler</button>
   <button *ngIf="editing"
           class="btn btn-link"

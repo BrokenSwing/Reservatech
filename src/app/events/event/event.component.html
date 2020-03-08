@@ -24,3 +24,22 @@
   <textarea *ngIf="editing" class="form-control" name="description"
             [(ngModel)]="model.description" required minlength="30" maxlength="800"></textarea>
 </form>
+
+<hr>
+
+<section>
+  <h4>Inscription</h4>
+  <p>{{this.event.maxParticipants}} places, {{this.event.maxParticipants - this.participants.length}} restantes</p>
+  <button class="btn btn-primary"
+          [hidden]="!this.connected() || this.participating()"
+          (click)="this.participate()"
+          [disabled]="this.submitting"
+  >Réserver</button>
+  <button class="btn btn-primary"
+          [hidden]="!this.connected() || !this.participating()"
+          (click)="this.stopParticipating()"
+          [disabled]="this.submitting"
+  >
+    Abandonner ma réservation
+  </button>
+</section>

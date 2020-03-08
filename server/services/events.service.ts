@@ -1,4 +1,5 @@
 import { Event } from '../models/event';
+import {EventParticipation} from '../models/event-participation';
 
 const NAME_FORMAT = /^[a-zA-Z\u00C0-\u017F\- ]{1,30}$/;
 const DESCRIPTION_FORMAT = /^.{30,800}$/;
@@ -10,7 +11,11 @@ export const Errors = {
     INVALID_DESCRIPTION: new Error(`Invalid description format, must follow rules : ${DESCRIPTION_FORMAT}`),
     INVALID_DATE_ORDER: new Error('Beginning date must be anterior to end date'),
     UNKNOWN_ORGANIZATION: new Error('Unknown organization'),
-    INVALID_MAX_PARTICIPANTS: new Error('Invalid max participants: must be greater than 0')
+    INVALID_MAX_PARTICIPANTS: new Error('Invalid max participants: must be greater than 0'),
+    FULL: new Error('The event is full. It can\' accept more participants'),
+    UNKNOWN_USER: new Error('Unknown user'),
+    ALREADY_PARTICIPANT: new Error('This user already participe to event'),
+    NOT_PARTICIPATING: new Error('This user does not participate to event'),
 };
 
 /**
@@ -194,4 +199,135 @@ export async function deleteEvent(id: number) {
     return Promise.reject(Errors.INTERNAL);
   }
 
+}
+
+/**
+ * Adds the user with the given id to the list of participants of the event with the given id.
+ *
+ * This function rejects with Errors.NOT_FOUND if event with the given id exists.
+ * This function rejects with Errors.UNKNOWN_USER if no user with the given id was found.
+ * This function rejects with Errors.FULL if no more user can be added as participant to the event with the given id.
+ * This function rejects with Errors.ALREADY_PARTICIPANT if the user already participate to event.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * @param eventId the id of the event to add the user to
+ * @param userId the id of the user to add as a participant to the event
+ *
+ * @return the event and the number of participants to this event, or an error
+ */
+export async function addParticipant(eventId: number, userId: number): Promise<Event> {
+
+  try {
+
+    const event: Event = await Event.findByPk(eventId);
+
+    if (event === null) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    const participantsCount: number = await EventParticipation.count({
+      where: {
+        eventId: event.id,
+      }
+    });
+
+    if (participantsCount + 1 > event.maxParticipants) {
+      return Promise.reject(Errors.FULL);
+    }
+
+    await EventParticipation.create({
+      eventId: event.id,
+      userId,
+    });
+
+    return Promise.resolve(event);
+  } catch (e) {
+
+    if (e.name && e.name === 'SequelizeForeignKeyConstraintError') {
+      return Promise.reject(Errors.UNKNOWN_USER);
+    }
+
+    if (e.name && e.name === 'SequelizeUniqueConstraintError') {
+      return Promise.reject(Errors.ALREADY_PARTICIPANT);
+    }
+
+    console.error(`Unable to add participant ${userId} to event ${eventId}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
+
+}
+
+/**
+ * Finds all participants to the event with the given id.
+ *
+ * This function rejects with Errors.NOT_FOUND if no event with the given id exists.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * @param eventId the id of the event to retrieve participants to
+ *
+ * @return an array of user ids, all participating to event. Or an error.
+ */
+export async function findAllParticipants(eventId: number): Promise<number[]> {
+
+  try {
+    const event = await Event.findByPk(eventId);
+
+    if (event === null) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    const participants: EventParticipation[] = await EventParticipation.findAll({
+      where: {
+        eventId: event.id,
+      }
+    });
+
+    return Promise.resolve(participants.map(p => p.userId));
+  } catch (e) {
+    console.error(`Unable to find participants for event ${eventId}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
+
+}
+
+/**
+ * Removes the user with the given id from the participants of the event with the given id.
+ *
+ * This function rejects with Errors.NOT_FOUND if no event with the given id exists.
+ * This function rejects with Errors.NOT_PARTICIPATING if the user does not participate to the event.
+ * This function rejects with Errors.INTERNAL if an error occurred while querying data source.
+ *
+ * @param eventId the id of the event to remove the user from
+ * @param userId the id of the user to remove from the event
+ *
+ * @return nothing or an error
+ */
+export async function removeParticipant(eventId: number, userId: number): Promise<void> {
+
+  try {
+    const event: Event = await Event.findByPk(eventId);
+
+    if (event === null) {
+      return Promise.reject(Errors.NOT_FOUND);
+    }
+
+    const destroyedCount: number = await EventParticipation.destroy({
+      where: {
+        eventId: event.id,
+        userId,
+      }
+    });
+
+    if (destroyedCount === 0) {
+      return Promise.reject(Errors.NOT_PARTICIPATING);
+    }
+
+    return Promise.resolve();
+  } catch (e) {
+    console.error(`Unable to add participant ${userId} to event ${eventId}`);
+    console.error(e);
+    return Promise.reject(Errors.INTERNAL);
+  }
 }

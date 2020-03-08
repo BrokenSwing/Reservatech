@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import * as eventsService from '../services/events.service';
 import * as moment from 'moment';
+import {isRequestAuthenticated} from '../middlewares/auth.middleware';
 
 function listAll(req: Request, res: Response) {
   eventsService.findAll().then((events) => {
@@ -81,4 +82,95 @@ function createOne(req: Request, res: Response)   {
 
 }
 
-export default { listAll, findOnyById, createOne };
+function addParticipant(req: Request, res: Response) {
+  const eventId = parseInt(req.params.eventId, 10);
+
+  if (isNaN(eventId)) {
+    res.status(400).send({ error: 'Event id must be an integer' });
+    return;
+  }
+
+  if (isRequestAuthenticated(req)) {
+
+    eventsService.addParticipant(eventId, req.userInfo.userId).then((event) => {
+
+      res.status(201).send(event);
+
+    }).catch((e) => {
+      switch (e) {
+        case eventsService.Errors.NOT_FOUND:
+          res.status(404).send({ error: e.message });
+          break;
+        case eventsService.Errors.UNKNOWN_USER:
+        case eventsService.Errors.FULL:
+        case eventsService.Errors.ALREADY_PARTICIPANT:
+          res.status(400).send({ error: e.message });
+          break;
+        case eventsService.Errors.INTERNAL:
+          res.status(500).send({ error: e.message });
+      }
+    });
+
+  } else {
+    res.sendStatus(401);
+  }
+
+}
+
+function listAllParticipants(req: Request, res: Response) {
+  const eventId = parseInt(req.params.eventId, 10);
+
+  if (isNaN(eventId)) {
+    res.status(400).send({ error: 'Event id must be an integer' });
+    return;
+  }
+
+  eventsService.findAllParticipants(eventId).then((event) => {
+
+    res.send(event);
+
+  }).catch((e) => {
+    switch (e) {
+      case eventsService.Errors.NOT_FOUND:
+        res.status(404).send({ error: e.message });
+        break;
+      case eventsService.Errors.INTERNAL:
+        res.status(500).send({ error: e.message });
+    }
+  });
+
+}
+
+function removeParticipant(req: Request, res: Response) {
+  const eventId = parseInt(req.params.eventId, 10);
+
+  if (isNaN(eventId)) {
+    res.status(400).send({ error: 'Event id must be an integer' });
+    return;
+  }
+
+  if (isRequestAuthenticated(req)) {
+
+    eventsService.removeParticipant(eventId, req.userInfo.userId).then(() => {
+
+      res.status(201).send({ success: 'Participation removed' });
+
+    }).catch((e) => {
+      switch (e) {
+        case eventsService.Errors.NOT_FOUND:
+          res.status(404).send({ error: e.message });
+          break;
+        case eventsService.Errors.NOT_PARTICIPATING:
+          res.status(400).send({ error: e.message });
+          break;
+        case eventsService.Errors.INTERNAL:
+          res.status(500).send({ error: e.message });
+      }
+    });
+
+  } else {
+    res.sendStatus(401);
+  }
+}
+
+export default { listAll, findOnyById, createOne, addParticipant, listAllParticipants, removeParticipant };

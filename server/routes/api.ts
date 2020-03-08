@@ -66,6 +66,11 @@ export function apiRoutes(): Router {
     .patch(authenticated(), isOrganizationMember(), organizationsController.patchEvent)
     .delete(authenticated(), isOrganizationMember(), organizationsController.deleteEvent);
 
+  organizationsRouter.route('/:id/events/:eventId/participants')
+    .post(authenticated(), eventsController.addParticipant)
+    .delete(authenticated(), eventsController.removeParticipant)
+    .get(eventsController.listAllParticipants);
+
   // ROUTERS MOUNTING //
 
   router.use('/events', eventsRouter);
