@@ -8,6 +8,8 @@ import {Router} from '@angular/router';
 })
 export class NavbarComponent implements OnInit {
 
+  expanded = false;
+
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
@@ -20,6 +22,10 @@ export class NavbarComponent implements OnInit {
   disconnect() {
     this.authService.disconnect();
     this.router.navigate(['/']);
+  }
+
+  switchExpanded() {
+    this.expanded = !this.expanded;
   }
 
 }
