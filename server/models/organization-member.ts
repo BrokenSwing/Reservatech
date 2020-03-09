@@ -9,12 +9,12 @@ export class OrganizationMember extends Model<OrganizationMember> {
 
   @PrimaryKey
   @ForeignKey(() => User)
-  @Column(DataType.NUMBER)
+  @Column(DataType.INTEGER)
   userId: number;
 
   @PrimaryKey
   @ForeignKey(() => Organization)
-  @Column(DataType.NUMBER)
+  @Column(DataType.INTEGER)
   organizationId: number;
 
 }

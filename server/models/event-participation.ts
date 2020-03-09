@@ -9,12 +9,12 @@ export class EventParticipation extends Model<EventParticipation> {
 
   @PrimaryKey
   @ForeignKey(() => User)
-  @Column(DataType.NUMBER)
+  @Column(DataType.INTEGER)
   userId: number;
 
   @PrimaryKey
   @ForeignKey(() => Event)
-  @Column(DataType.NUMBER)
+  @Column(DataType.INTEGER)
   eventId: number;
 
 }

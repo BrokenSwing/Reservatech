@@ -39,7 +39,7 @@ export class Event extends Model<Event> {
   maxParticipants: number;
 
   @ForeignKey(() => Organization)
-  @Column(DataType.NUMBER)
+  @Column(DataType.INTEGER)
   organizationId: number;
 
   @BelongsTo(() => Organization)
