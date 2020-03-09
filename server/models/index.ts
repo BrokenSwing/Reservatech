@@ -13,6 +13,7 @@ async function init(): Promise<Sequelize> {
     if (process.env.NODE_ENV === 'production') {
       return new Sequelize(process.env.DATABASE_URL, {
         ssl: true,
+        models,
       });
     } else {
       return new Sequelize({
