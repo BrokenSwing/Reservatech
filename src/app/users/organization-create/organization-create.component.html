@@ -9,10 +9,18 @@
       required
       [(ngModel)]="model.name"
       name="name"
+      maxlength="30"
+      appRegex="^[a-zA-Z\u00C0-\u017F\- ]*$"
       #name="ngModel"
     >
     <small class="form-text text-danger" *ngIf="name.invalid && (name.dirty || name.touched) && name.errors.required">
       Requis.
+    </small>
+    <small class="form-text text-danger" *ngIf="name.invalid && (name.dirty || name.touched) && name.errors.maxlength">
+      Le nom de doit pas dépasser 30 caractères.
+    </small>
+    <small class="form-text text-danger" *ngIf="name.invalid && (name.dirty || name.touched) && name.errors.regex">
+      Les caractères spéciaux ne sont pas autorisés.
     </small>
   </div>
   <div class="form-group">
@@ -22,6 +30,7 @@
       class="form-control"
       required
       minlength="20"
+      maxlength="300"
       [(ngModel)]="model.description"
       name="description"
       #desc="ngModel"
@@ -31,6 +40,9 @@
     </small>
     <small class="form-text text-danger" *ngIf="desc.invalid && (desc.dirty || desc.touched) && desc.errors.minlength">
       La description doit faire au moins 20 caractères de long.
+    </small>
+    <small class="form-text text-danger" *ngIf="desc.invalid && (desc.dirty || desc.touched) && desc.errors.maxlength">
+      La description doit faire au maximum 300 caractères de long.
     </small>
   </div>
   <input type="submit" class="btn btn-primary" value="Créer" [disabled]="!organizationForm.valid || submitting" (click)="create()">

@@ -7,6 +7,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
 import { UserOrganizationsListComponent } from './user-organizations-list/user-organizations-list.component';
 import { OrganizationCreateComponent } from './organization-create/organization-create.component';
+import {AppCommonModule} from '../app-common/app-common.module';
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import { OrganizationCreateComponent } from './organization-create/organization-
     CommonModule,
     HttpClientModule,
     FormsModule,
+    AppCommonModule,
     UsersRoutingModule,
   ]
 })
