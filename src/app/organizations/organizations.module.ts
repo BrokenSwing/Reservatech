@@ -6,6 +6,7 @@ import {HttpClientModule} from '@angular/common/http';
 import { OrganizationsListComponent } from './organizations-list/organizations-list.component';
 import { OrganizationDetailsComponent } from './organization-details/organization-details.component';
 import {FormsModule} from '@angular/forms';
+import {AppCommonModule} from '../app-common/app-common.module';
 
 
 @NgModule({
@@ -14,6 +15,7 @@ import {FormsModule} from '@angular/forms';
         CommonModule,
         HttpClientModule,
         FormsModule,
+        AppCommonModule,
         OrganizationsRoutingModule,
     ]
 })

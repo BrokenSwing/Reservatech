@@ -4,7 +4,26 @@
 
 <form #updateForm="ngForm">
   <h2 *ngIf="!editing">{{this.organization.name}}</h2>
-  <input *ngIf="editing" name="name" class="form-control" type="text" [(ngModel)]="model.name" required>
+  <div *ngIf="editing">
+    <input name="name"
+           class="form-control"
+           type="text"
+           [(ngModel)]="model.name"
+           required
+           maxlength="30"
+           appRegex="^[a-zA-Z\u00C0-\u017F\- ]*$"
+           #name="ngModel"
+    >
+    <small class="form-text text-danger" *ngIf="name.invalid && (name.dirty || name.touched) && name.errors.required">
+      Requis.
+    </small>
+    <small class="form-text text-danger" *ngIf="name.invalid && (name.dirty || name.touched) && name.errors.maxlength">
+      Le nom de doit pas dépasser 30 caractères.
+    </small>
+    <small class="form-text text-danger" *ngIf="name.invalid && (name.dirty || name.touched) && name.errors.regex">
+      Les caractères spéciaux ne sont pas autorisés.
+    </small>
+  </div>
 
   <button *ngIf="isMember() && !editing" class="btn btn-link" (click)="switchEdit()">Editer</button>
   <button *ngIf="isMember() && !editing" class="btn btn-link text-danger" (click)="deleteOrg()">Supprimer</button>
@@ -21,8 +40,25 @@
 
   <h4>Description :</h4>
   <p *ngIf="!editing">{{organization.description}}</p>
-  <textarea *ngIf="editing" class="form-control" name="description"
-            [(ngModel)]="model.description" required minlength="20" maxlength="300"></textarea>
+  <div *ngIf="editing">
+    <textarea class="form-control"
+              name="description"
+              [(ngModel)]="model.description"
+              required
+              minlength="20"
+              maxlength="300"
+              #desc="ngModel"
+    ></textarea>
+    <small class="form-text text-danger" *ngIf="desc.invalid && (desc.dirty || desc.touched) && desc.errors.required">
+      Requis.
+    </small>
+    <small class="form-text text-danger" *ngIf="desc.invalid && (desc.dirty || desc.touched) && desc.errors.minlength">
+      La description doit faire au moins 20 caractères de long.
+    </small>
+    <small class="form-text text-danger" *ngIf="desc.invalid && (desc.dirty || desc.touched) && desc.errors.maxlength">
+      La description doit faire au maximum 300 caractères de long.
+    </small>
+  </div>
 </form>
 
 <section>
