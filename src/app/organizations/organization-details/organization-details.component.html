@@ -29,7 +29,7 @@
   <h4>Membres</h4>
   <ul class="list-group list-group-flush">
     <li class="list-group-item" *ngFor="let m of members">
-      {{m.firstName}} {{m.lastName}}
+      {{m.firstName}} {{m.lastName}} {{m.id === ownUserId() ? '(vous)' : ''}}
       <button class="badge badge-danger badge-pill" *ngIf="isMember()" (click)="removedMember(m.id)"
               [disabled]="submitting"
       >
@@ -50,7 +50,7 @@
 
 <section class="list-group list-group-flush">
   <h4>Événements</h4>
-  <small><a routerLink="/events/new">Créer un événement</a></small>
+  <small *ngIf="isMember()"><a routerLink="/events/new">Créer un événement</a></small>
   <a class="list-group-item list-group-item-action" [routerLink]="'/events/' + e.id" *ngFor="let e of this.events">
     <div class="d-flex w-100 justify-content-between">
       <h5>{{e.name}}</h5>

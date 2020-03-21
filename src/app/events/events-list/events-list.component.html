@@ -1,3 +1,5 @@
+<h2>Événements</h2>
+<small *ngIf="this.events.length === 0">Pas d'événements à afficher</small>
 <section class="list-group list-group-flush">
   <a class="list-group-item list-group-item-action" [routerLink]="'./' + e.id" *ngFor="let e of this.events">
     <div class="d-flex w-100 justify-content-between">

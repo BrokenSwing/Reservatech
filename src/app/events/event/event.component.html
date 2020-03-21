@@ -28,8 +28,10 @@
 <hr>
 
 <section>
-  Débute : {{calendar(this.event.beginning)}}<br>
-  Termine : {{calendar(this.event.end)}}
+  <p>
+    Débute : {{calendar(this.event.beginning)}}<br>
+    Termine : {{calendar(this.event.end)}}
+  </p>
   <h4>Inscription</h4>
   <p>{{this.event.maxParticipants}} places, {{this.event.maxParticipants - this.participants.length}} restantes</p>
   <button class="btn btn-primary"
@@ -45,9 +47,10 @@
     Abandonner ma réservation
   </button>
 </section>
-
+<hr>
 <section *ngIf="this.canEdit()">
   <h4>Participants</h4>
+  <small *ngIf="this.participatingUsers.length === 0">Pas de participants</small>
   <ul class="list-group">
     <li class="list-group-item" *ngFor="let p of this.participatingUsers">{{p.firstName}} {{p.lastName}}</li>
   </ul>

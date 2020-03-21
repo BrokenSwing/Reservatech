@@ -139,4 +139,8 @@ export class OrganizationDetailsComponent implements OnInit {
       });
   }
 
+  ownUserId() {
+    return this.authService.getUserInfo().userId;
+  }
+
 }
