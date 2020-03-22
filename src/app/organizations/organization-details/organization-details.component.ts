@@ -140,7 +140,7 @@ export class OrganizationDetailsComponent implements OnInit {
   }
 
   ownUserId() {
-    return this.authService.getUserInfo().userId;
+    return this.authService.isConnected() ? this.authService.getUserInfo().userId : -1;
   }
 
 }
